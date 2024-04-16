@@ -7,7 +7,7 @@ def config():
         # Random Forest
         'RF': {
             'model':RandomForestClassifier(),
-            'output':'OB_random_forest_log.csv',
+            'output':'logs/OB_random_forest_log.csv',
             'space':{
                 'n_estimators':5,
                 'max_depth':    hp.uniformint('max_depth', 1, 4),
@@ -18,12 +18,10 @@ def config():
 
         'XGB':{
             'model':XGBClassifier(),
-            'output':'OB_XGB_log.csv',
+            'output':'logs/OB_XGB_log.csv',
             'space':{
-                'n_estimators':5,
-                'max_depth':    hp.uniformint('max_depth', 1, 4),
-                'max_features': hp.choice('max_features', [ 'sqrt', 'log2']),
-                'criterion':    hp.choice('criterion', ['gini', 'entropy'])
+                'n_estimators':5,                
+                'max_depth':    hp.uniformint('max_depth', 1, 4)
                 }
         }, # Block Time Series Cross Validation
         
