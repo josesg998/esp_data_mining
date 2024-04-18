@@ -1,35 +1,41 @@
-from sklearn.ensemble import RandomForestClassifier
 from hyperopt import hp
-from xgboost import XGBClassifier
 
-def config():
-    return {
-        # Random Forest
-        'RF': {
+def config(modelo):    
+    diccionario = {       
+        'CV':  [
+        {'train':(1970,2009),'val':(2010,2011)},
+        {'train':(1970,2011),'val':(2012,2013)},
+        {'train':(1970,2013),'val':(2014,2015)},
+        {'train':(1970,2015),'val':(2016,2017)},
+        {'train':(1970,2017),'val':(2018,2019)}],
+        'input':'data/vdem_coup.pkg'
+    }
+    
+    if modelo=='RF': # Random Forest
+        from sklearn.ensemble import RandomForestClassifier        
+        diccionario[modelo] =  {
             'model':RandomForestClassifier(),
-            'output':'logs/OB_random_forest_log.csv',
+            'output':'optimizacion_bayesiana/logs/OB_random_forest_log.csv',
             'space':{
                 'n_estimators':5,
                 'max_depth':    hp.uniformint('max_depth', 1, 4),
                 'max_features': hp.choice('max_features', [ 'sqrt', 'log2']),
                 'criterion':    hp.choice('criterion', ['gini', 'entropy'])
                 }
-        },
-
-        'XGB':{
+        }
+        return diccionario
+    
+    elif modelo=='XGB': #XGBBoost
+        from xgboost import XGBClassifier
+        diccionario[modelo] = {
             'model':XGBClassifier(),
-            'output':'logs/OB_XGB_log.csv',
+            'output':'optimizacion_bayesiana/logs/OB_XGB_log.csv',
             'space':{
                 'n_estimators':5,                
                 'max_depth':    hp.uniformint('max_depth', 1, 4)
                 }
-        }, # Block Time Series Cross Validation
-        
-        'CV':  {
-        1: {'train':(1970,2009),'val':(2010,2011)},
-        2: {'train':(1970,2011),'val':(2012,2013)},
-        3: {'train':(1970,2013),'val':(2014,2015)},
-        4: {'train':(1970,2015),'val':(2016,2017)},
-        5: {'train':(1970,2017),'val':(2018,2019)}
         }
-    }
+        return diccionario
+    
+    else:
+        print("No tenemos ese modelo en el diccionario")

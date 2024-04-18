@@ -3,22 +3,30 @@ from hyperopt import fmin, tpe, STATUS_OK, Trials
 from sklearn.metrics import roc_auc_score
 from xgboost import DMatrix, train
 from config import config
+from numpy import random
 
-def OB(model):
+def OB():
+    model = input('Elegir modelo (RF o XGB): ')
+    model = model.upper()
     # Define the space over which to search
-    config_ML = config()
+    config_ML = config(model)
 
     series_CV = config_ML['CV']
-    model     = config_ML[model]
-    space     = model['space']
-    clf       = model['model']
-    output    = model['output']
+    data      = config_ML['input']
+    space     = config_ML[model]['space']
+    clf       = config_ML[model]['model']
+    output    = config_ML[model]['output']
 
     log = []
 
-
-    # df = pd.read_csv('../data/vdem_coup.csv',parse_dates=True,keep_date_col=True)
-    df = pd.read_pickle('../data/vdem_coup.pkg')
+    try:
+        # df = pd.read_csv('../data/vdem_coup.csv',parse_dates=True,keep_date_col=True)
+        df = pd.read_pickle(data)
+    except:
+        print('No hay archivo pickle, se cargará el archivo csv y se guardará el pickle para futuras ocasiones')
+        data_csv = data.split('.')[0]+'.csv'
+        df = pd.read_csv(data_csv,parse_dates=True,keep_date_col=True,low_memory=False)
+        df.to_pickle(data)
 
     # drop non numeric columns for df pandas dataframe
     df = df.select_dtypes(include=['number'])
@@ -32,7 +40,7 @@ def OB(model):
 
         # Perform block time-series cross-validation
         scores = []
-        for n in range(1,6):                
+        for n in range(5):                
             
             inicio_train = series_CV[n]['train'][0]
             fin_train    = series_CV[n]['train'][1]
@@ -61,7 +69,7 @@ def OB(model):
         return -mean_score
 
     # Define the objective function
-    def objective(params,clf=clf,log=log,output=output):
+    def objective(params):
         
         clf.set_params(**params,random_state=42)
             
@@ -78,4 +86,9 @@ def OB(model):
 
     # Run the optimizer
     trials = Trials()
-    best = fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=10, trials=trials)
+    fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=10, trials=trials)
+    
+    print("Fin de la Bayesiana!")
+    
+if __name__ == "__main__":
+    OB()
