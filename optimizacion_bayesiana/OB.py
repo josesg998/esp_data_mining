@@ -8,6 +8,12 @@ import os
 import pickle
 
 def OB():
+    # create folder logs and trials if they don't exist
+    if not os.path.exists('optimizacion_bayesiana/logs'):
+        os.makedirs('optimizacion_bayesiana/logs')
+    if not os.path.exists('optimizacion_bayesiana/trials'):
+        os.makedirs('optimizacion_bayesiana/trials')    
+    
     #eleccion de modelo
     model = input('Elegir modelo (RF o XGB): ')
     model = model.upper()
