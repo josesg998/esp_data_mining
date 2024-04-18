@@ -21,7 +21,8 @@ def config(modelo):
                 'max_depth':    hp.uniformint('max_depth', 1, 4),
                 'max_features': hp.choice('max_features', [ 'sqrt', 'log2']),
                 'criterion':    hp.choice('criterion', ['gini', 'entropy'])
-                }
+                },
+            'trials':'optimizacion_bayesiana/trials/trials_RF.pkl'
         }
         return diccionario
     
@@ -33,7 +34,8 @@ def config(modelo):
             'space':{
                 'n_estimators':5,                
                 'max_depth':    hp.uniformint('max_depth', 1, 4)
-                }
+                },
+            'trials':'optimizacion_bayesiana/trials/trials_XGB.pkl'
         }
         return diccionario
     

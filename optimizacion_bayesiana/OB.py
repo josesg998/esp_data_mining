@@ -3,9 +3,12 @@ from hyperopt import fmin, tpe, STATUS_OK, Trials
 from sklearn.metrics import roc_auc_score
 from xgboost import DMatrix, train
 from config import config
-from numpy import random
+import numpy as np
+import os
+import pickle
 
 def OB():
+    
     model = input('Elegir modelo (RF o XGB): ')
     model = model.upper()
     # Define the space over which to search
@@ -16,7 +19,15 @@ def OB():
     space     = config_ML[model]['space']
     clf       = config_ML[model]['model']
     output    = config_ML[model]['output']
-
+    trials_path    = config_ML[model]['trials']
+    
+    # # Check if the log file exists
+    # if os.path.exists(output):
+    #     # Load the log from the file
+    #     log = list(pd.read_csv(output, sep='\t'))
+    #     print(log)
+    # else:
+    # Create a new log if no log file exists
     log = []
 
     try:
@@ -85,8 +96,14 @@ def OB():
 
 
     # Run the optimizer
-    trials = Trials()
-    fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=10, trials=trials)
+    if os.path.exists(trials_path):
+        print("Historial de bayesiana encontrado! Cargando...\n")
+        trials = pickle.load(open(trials_path, "rb"))
+        # import log file and transform it into a list consisted of dictionaries
+        log = list(pd.read_csv(output, sep='\t').drop(columns='iteration').to_dict(orient='records'))
+    else:
+        trials = Trials()
+    fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=10, trials=trials, rstate=np.random.default_rng(42),trials_save_file=trials_path)
     
     print("Fin de la Bayesiana!")
     
