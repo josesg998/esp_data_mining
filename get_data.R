@@ -5,6 +5,8 @@
 
 require("data.table")
 require("vdemdata")
+#create directory called data
+dir.create("data")
 
 vdem <- vdemdata::vdem
 
