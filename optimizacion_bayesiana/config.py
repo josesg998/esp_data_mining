@@ -1,7 +1,8 @@
 from hyperopt import hp
 
 def config(modelo):    
-    diccionario = {       
+    diccionario = {
+        'iteraciones': 10,
         'CV':  [
         {'train':(1970,2009),'val':(2010,2011)},
         {'train':(1970,2011),'val':(2012,2013)},

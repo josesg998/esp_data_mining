@@ -8,30 +8,25 @@ import os
 import pickle
 
 def OB():
-    
+    #eleccion de modelo
     model = input('Elegir modelo (RF o XGB): ')
     model = model.upper()
-    # Define the space over which to search
+    
+    # se toma información del modelo desde el config file
     config_ML = config(model)
 
-    series_CV = config_ML['CV']
-    data      = config_ML['input']
-    space     = config_ML[model]['space']
-    clf       = config_ML[model]['model']
-    output    = config_ML[model]['output']
+    series_CV      = config_ML['CV']
+    data           = config_ML['input']
+    space          = config_ML[model]['space']
+    clf            = config_ML[model]['model']
+    output         = config_ML[model]['output']
     trials_path    = config_ML[model]['trials']
+    iteraciones    = config_ML['iteraciones']
     
-    # # Check if the log file exists
-    # if os.path.exists(output):
-    #     # Load the log from the file
-    #     log = list(pd.read_csv(output, sep='\t'))
-    #     print(log)
-    # else:
-    # Create a new log if no log file exists
     log = []
 
+    # se toma archivo pickle, si no existe se crea desde el csv generado en el script de R
     try:
-        # df = pd.read_csv('../data/vdem_coup.csv',parse_dates=True,keep_date_col=True)
         df = pd.read_pickle(data)
     except:
         print('No hay archivo pickle, se cargará el archivo csv y se guardará el pickle para futuras ocasiones')
@@ -49,7 +44,7 @@ def OB():
 
     def block_time_series_CV(X, y, clf,series_CV=series_CV,model='RF'):
 
-        # Perform block time-series cross-validation
+        # se hace block-time series cv a partir del config file
         scores = []
         for n in range(5):                
             
@@ -81,7 +76,7 @@ def OB():
 
     # Define the objective function
     def objective(params):
-        
+        '''funcion objetivo a minimizar por la optimización bayesiana'''
         clf.set_params(**params,random_state=42)
             
         mean_score = block_time_series_CV(X, y, clf)        
@@ -94,16 +89,18 @@ def OB():
         
         return {'loss': -mean_score, 'status': STATUS_OK}
 
-
-    # Run the optimizer
+    # si hay un archivo con el historial de bayesianas se carga, si no se crea un trials vacío
     if os.path.exists(trials_path):
         print("Historial de bayesiana encontrado! Cargando...\n")
         trials = pickle.load(open(trials_path, "rb"))
-        # import log file and transform it into a list consisted of dictionaries
+        # se import log file
         log = list(pd.read_csv(output, sep='\t').drop(columns='iteration').to_dict(orient='records'))
     else:
         trials = Trials()
-    fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=10, trials=trials, rstate=np.random.default_rng(42),trials_save_file=trials_path)
+    
+    # se ejecuta optimización bayesiana
+    fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=iteraciones, trials=trials, 
+         rstate=np.random.default_rng(42),trials_save_file=trials_path)
     
     print("Fin de la Bayesiana!")
     
