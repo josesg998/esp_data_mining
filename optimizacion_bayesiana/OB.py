@@ -78,7 +78,7 @@ def OB():
             scores.append(score)
         
             mean_score = sum(scores) / len(scores)
-        return -mean_score
+        return mean_score
 
     # Define the objective function
     def objective(params):
