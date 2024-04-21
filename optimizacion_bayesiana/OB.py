@@ -84,10 +84,12 @@ def OB():
     def objective(params):
         '''funcion objetivo a minimizar por la optimización bayesiana'''
         clf.set_params(**params,random_state=42)
-            
+        time = pd.Timestamp.now()
         mean_score = block_time_series_CV(X, y, clf)        
+        minutes = (pd.Timestamp.now()-time).seconds/60
         
         params['score'] = mean_score
+        params['time'] = round(minutes,2)
         
         log.append(params)
         
