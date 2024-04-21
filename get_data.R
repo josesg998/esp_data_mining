@@ -5,6 +5,7 @@
 
 require("data.table")
 require("vdemdata")
+require("reticulate")
 #create directory called data
 dir.create("data")
 
@@ -49,4 +50,19 @@ vdem_post_1945$coup <- 0
 vdem_post_1945[which(paste(vdem_post_1945$country_name, vdem_post_1945$year) 
                 %in% paste(powell_and_thyne$country, powell_and_thyne$year)),]$coup <- 1
 
+# pasamos de 4608 columnas a 1459
+vdem_post_1945 <- vdem_post_1945[,!grepl("_sd|_code(high|low)|_nr|_ord|_osp", names(vdem_post_1945))]
+
+# drop 'e_coups','e_pt_coup','e_pt_coup_attempts'
+vdem_post_1945 <- vdem_post_1945[,!names(vdem_post_1945) %in% c('e_coups','e_pt_coup','e_pt_coup_attempts')]
+
 fwrite(vdem_post_1945, "data/vdem_coup.csv")
+
+# Import pandas in R
+pd <- import("pandas")
+
+# Convert the R data frame to a Python data frame
+vdem_post_1945_py <- r_to_py(vdem_post_1945)
+
+# Save the Python data frame as a pickle file
+pd$to_pickle(vdem_post_1945_py, "data/vdem_coup.pkl")
