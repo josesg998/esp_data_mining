@@ -52,12 +52,12 @@ def OB():
 
         # se hace block-time series cv a partir del config file
         scores = []
-        for n in range(5):                
+        for fold in series_CV:                
             
-            inicio_train = series_CV[n]['train'][0]
-            fin_train    = series_CV[n]['train'][1]
-            inicio_val   = series_CV[n]['val'][0]
-            fin_val      = series_CV[n]['val'][1]
+            inicio_train = fold['train'][0]
+            fin_train    = fold['train'][1]
+            inicio_val   = fold['val'][0]
+            fin_val      = fold['val'][1]
             
             X_train = X[X['year'].between(inicio_train, fin_train)]
             X_val   = X[X['year'].between(inicio_val, fin_val)]
@@ -68,7 +68,7 @@ def OB():
                 dtrain = DMatrix(X_train,label=y_train)
                 dtest = DMatrix(X_val,label=y_val)
                 
-                bst = train(clf, dtrain, num_boost_round=10) # TODO
+                bst = train(clf, dtrain)
                 
                 y_pred = bst.predict(dtest)
             else:
