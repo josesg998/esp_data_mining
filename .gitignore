@@ -6,3 +6,16 @@ __pycache__/
 logs/
 # ignore trials folder
 trials/
+# ignore project files
+.Rproj.user
+*.RData
+*.Rhistory
+*.Rproj
+# ignore .tex files
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.bbl
+*.bcf
+*.xml
