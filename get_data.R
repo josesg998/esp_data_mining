@@ -14,10 +14,6 @@ vdem <- vdemdata::vdem
 ## Powell and Thyne coup dataset
 powell_and_thyne <- fread("http://www.uky.edu/~clthyn2/coup_data/powell_thyne_coups_final.txt")
 
-# write vdem as .pkg
-fwrite(vdem, "data/vdem.csv")
-fwrite(powell_and_thyne, "data/powell_and_thyne.csv")
-
 ## Filter year
 vdem_post_1945 <- vdem[vdem$year >= 1950,]
 
@@ -50,13 +46,14 @@ vdem_post_1945$coup <- 0
 vdem_post_1945[which(paste(vdem_post_1945$country_name, vdem_post_1945$year) 
                 %in% paste(powell_and_thyne$country, powell_and_thyne$year)),]$coup <- 1
 
+# write csv file
+fwrite(vdem_post_1945, "data/vdem_coup_EDA.csv")
+
 # pasamos de 4608 columnas a 1459
 vdem_post_1945 <- vdem_post_1945[,!grepl("_sd|_code(high|low)|_nr|_ord|_osp", names(vdem_post_1945))]
 
 # drop 'e_coups','e_pt_coup','e_pt_coup_attempts'
 vdem_post_1945 <- vdem_post_1945[,!names(vdem_post_1945) %in% c('e_coups','e_pt_coup','e_pt_coup_attempts')]
-
-fwrite(vdem_post_1945, "data/vdem_coup.csv")
 
 # Import pandas in R
 pd <- import("pandas")
@@ -65,4 +62,4 @@ pd <- import("pandas")
 vdem_post_1945_py <- r_to_py(vdem_post_1945)
 
 # Save the Python data frame as a pickle file
-pd$to_pickle(vdem_post_1945_py, "data/vdem_coup.pkl")
+pd$to_pickle(vdem_post_1945_py, "data/vdem_coup_ML.pkl")
