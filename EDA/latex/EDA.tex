@@ -1,9 +1,7 @@
 \documentclass{article}
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{../../template}
-
-
+\usepackage[nonatbib]{../../template}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -16,11 +14,13 @@
 \usepackage{xcolor}         % colors
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage[backend=biber,sorting=ynt,style=apa]{biblatex}
 
+\addbibresource{bibliography.bib}
 
-\graphicspath{ {imagenes/} }
+\graphicspath{ {../imagenes/} }
 
-\title{Pre TP2: Data Mining en Ciencia y Tecnología}
+\title{Entrega 2: Metodología y EDA}
 
 \author{%
   José Saint Germain\\
@@ -32,26 +32,51 @@
 \maketitle
 
 \section{Introducción}
+El objetivo de esta entrega es realizar una breve descripción de las metodologías que 
+se utilizarán durante el trabajo final de especialización, así como realizar un 
+análisis exploratorio de los datos (EDA), para comprender mejor la estructura de
+los datos que se trabajarán.
 
-El análisis de la topología de grafos (es decir, redes) es un área de investigación que
-atañe a diferentes campos de estudio. Para ejempliﬁcar el uso de grafos nos enfocaremos en
-el los datos obtenidos en el trabajo de Tagliazucchi y colaboradores (2013) que busca 
-relacionar cambios en la modularidad de las redes construidas a partir de la señal de resonancia
-magnética funcional (fMRI) con los distintos estadíos del sueño.
-\section{Objetivos}
-Familiarizarse con la generación de grafos que representen un conjunto de datos. Visua-
-lizar, manipular y comparar distintos grafos. Calcular parámetros básicos de un grafo, y
-compararlos con modelos de redes random, small world y scale-free.
+\section{Metodología}
+Como lo que buscamos realizar es experimentar con diferentes datos el mismo trabajo realizado
+por el FMIm (\cite{Ceb24}), vamos a replicar las mismas técnicas de optimización de hiperparámetros, así como
+los mismos algoritmos de entrenamiento y de intepretación de resultados.
 
-\section{Estructura de los Datos}
-En la carpeta DataSujetos se encuentran los archivos separados por cada sujeto y estadio. 
-Para cada sujeto y estadío de sueño encontraremos una matriz de correlaciones de tamaño
-116x116 con las correlaciones entre las señales BOLD de 116 regiones cerebrales.
+Los algoritmos que se utilizarán serán Random Forest (\cite{Bre01}) y XGBoost
+(\cite{Che16}). Para ajustar los hiperparámetros se utilizará la optimización
+bayesiana junto al método de block-time-series cross-validation. Por último, la métrica a
+optimizar y que se utilizará para comparar predicciones será el área bajo la curva (AUC).
+Adicionalmente, se realizará un análisis exploratorio de datos de manera introductoria al
+trabajo y se buscará utilizar valores Shapley para analizar los resultados de cada algoritmo.
 
-Además se incluyen los nombres y coordenadas de las 116 regiones en un archivo apar-
-te: aalextendedwithCoords.csv. Estas regiones están deﬁnidas a partir del atlas Automatic
-Anatomical Labeling (AAL). Ejemplos de los procedimiento para comenzar el análisis pueden 
-encontrarse en \href{https://colab.research.google.com/drive/1xU8p_YSeSxPAODgiyJwJAVuuDC-jrTwP#scrollTo=VG4joS9_OZCA#offline=true&sandboxMode=true}{este colab}.
+
+\section{Análisis Exploratorio de Datos}
+
+Como descripción general de la base de datos de VDEM, podemos mencionar que cuenta con 27734 filas y 4607 columnas. Como es una base de datos
+de panel, se tiene información de 202 países durante 235 años. Para comprender la estructura de la información, es importante destacar que la base
+original cuenta con información brindada por distintos expertos para cada país en cada año. Para poder procesar y obtener la base final, se agrega la información
+de diferentes maneras. Es por este motivo que, además de la información identificactoria de cada país (la cual se repite en cada año), la mayoría de las variables
+sustantivas cuentan con diferentes versiones, por cada tipo de variable de agregación generada. Por ejemplo, una variable puede contar con su versión princial, la cual
+es un promedio reescalado del 1 al 5, sumado a una versión con la media simple (con sufijo _mean); una versión con el valor máximo y mínimo expresado por un experto
+(_codehigh y codelow, respectivamente); y una versión con el desvío estándar (_sd), en caso de buscar conocer el grado de "acuerdo" entre los expertos respecto a
+la situación del país.
+
+
+\subsection{Ánalisis de nulos}
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{1_nas.png}
+  \caption{Conteo de nulos por año y agrupador de variables}
+\end{figure}
+
+\subsection{Análisis de variable objetivo}
+
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{2_golpes.png}
+  \caption{Conteo de golpes de estado en el mundo}
+\end{figure}
+
 
 \section{Preprocesamiento de los datos}
 
@@ -59,188 +84,6 @@ encontrarse en \href{https://colab.research.google.com/drive/1xU8p_YSeSxPAODgiyJ
 de las regiones cerebrales a las que se les registró la actividad. Reportar cuántos sujetos y cuántos estados de sueño se observan en el conjunto de
 datos.}
 
-% \begin{table}[h]
-%   \centering
-%   \caption{Conteo de estados de sueño en el conjunto de datos.}
-%   \label{tab:estados_sueno}
-%   \begin{tabular}{lr}
-%     \toprule
-%     estado & cantidad de sujetos \\
-%     \midrule
-%     N1 & 18 \\
-%     N2 & 18 \\
-%     N3 & 18 \\
-%     W & 18 \\
-%     \bottomrule
-%   \end{tabular}
-% \end{table}
-
-% Como se observa en el cuadro 1, el dataset cuenta con 18 sujetos, teniendo cada uno lo
-% cuatro diferentes estados de sueño.
-
-% \section{Manipulación de datos}
-
-% \textit{5.1 Graﬁcar la matriz de correlaciones entre regiones (es decir, la "matriz de adyacencia
-% pesada") para el sujeto 2 de la condición despierto ("Wake"). Transformar dicha matriz de adyacencia pesada a una matriz de adyancia binaria $A_{i,j}$
-% que represente una una densidad de enlaces igual a 0.08. ¿Cuál es el valor de umbral de correlación entre pares de regiones que tuvo que utilizar?}
-
-% Como se observa en la figura 1, se grafica en la imagen de la izquierda la matriz de
-% correlaciones entre regiones. A su vez, en la imagen de la derecha, se grafica la misma
-% matriz representando una densidad de enlaces igual a 0.08. Para ello, se utilizó un umbral
-% de 0.75, el cual se obtiene con la función desarrollada por el profesor, utilizando como
-% hiperparámetro la densidad de enlaces deseada.
-
-% \begin{figure}[H]
-%   \centering  
-%   \includegraphics[width=.8\textwidth]{1_Sujeto2W.png}
-%   \caption{Matriz de adyacencia pesada y binarizada del sujeto 2 despierto}
-% \end{figure}
-
-
-% \textit{5.2 Utilizando $A_{i,j}$ , obtener el grafo resultante G ¿Es G un grafo conectado? ¿Se puede calcular la distancia media entre pares de nodos
-% d del grafo G? ¿Si no se puede, qué medida equivalente calcularías?}
-
-% El grafo que se obtiene de $A_{i,j}$ no está conectado, por lo que no se puede calcular
-% la distancia media entre pares de nodos. Alternativamente, se puede calcular la distancia media de su
-% componente gigante (es decir, el componente conectado más grande dentro del grafo G),
-% el cual es 3.85. Otra opción es calcular la eficiencia global del grafo el cual se calcula en el ejercicio
-%  siguiente.
-
-% \textit{5.3 Calcular d para cada componente conectado de G. Calcular la eﬁciencia global ef f del
-% grafo G.}
-
-% La distancia d de los dos componentes conectados más grandes de G dan 3.85 y 1.28. Después,
-% el resto de componentes conectados tienen un valor de d igual a 0. Por último, la eficiencia
-% global del grafo G es 0.2446.
-
-% \textit{5.4 Obtener la lista de enlaces del grafo G. Calcular el grado promedio < k >, el nodo con grado máximo kmax, el coeﬁciente de 
-% clustering promedio}
-
-% \begin{table}[H]
-%   \begin{minipage}{0.5\linewidth}
-%   \centering
-%   \caption{Enlaces aleatorios del grafo G}
-%   \begin{tabular}{rr}
-%     \toprule
-%     Nodo 1 & Nodo 2 \\
-%     \midrule
-%     23 & 92 \\
-%     10 & 44 \\
-%     11 & 62 \\
-%     28 & 99 \\
-%     4 & 53 \\
-%     60 & 66 \\
-%     0 & 28 \\
-%     95 & 97 \\
-%     \bottomrule
-%   \end{tabular}
-% \end{minipage}%
-% \begin{minipage}{0.5\linewidth}
-%   \centering
-%   \caption{Medidas del grafo G}
-%   \begin{tabular}{lr}
-%   \toprule
-%   Medida & Valor \\
-%   \midrule
-%   Grado promedio (K) & 9.207 \\
-%   Nodo con grado máximo (kmax) & 30 \\
-%   Coeficiente de clustering promedio (C) & 0.527 \\
-%   Eficiencia global  & 0.245 \\
-%   \bottomrule
-%   \end{tabular}
-% \end{minipage}
-% \end{table}
-
-% Ya que la lista de enlaces del grafo es extensa. Se muestra una lista aleatoria de 8 enlaces 
-% del grafo G. También se muestran los valores de las medidas del grafo G en el cuadro 3.
-
-% \textit{5.6 Visualizar el grafo, ubicando los nodos en sus coordenadas cerebrales y coloreando cada
-% nodo de acuerdo a su coeﬁciente de clustering Ci. Graﬁcar la distribución de grado del grafo, elijiendo un número de bins apropriado}
-
-
-% \begin{figure}[H]
-%   \centering  
-%   \includegraphics[width=.9\textwidth]{grafo_hist.png}
-%   \caption{Grafo G}
-% \end{figure}
-
-
-% \textit{5.7 Vamos a comparar el grafo G con prototipos de redes poissonianas (random), small-World
-%  y scale-free, usando los algoritmos de Erdos-Renyi, Watts-Strogatz y Barabasi-Albert, respectivamente.
-%  Para ello, elegir (y reportar) los parámetros utilizados para cada algoritmo, 
-% buscando siempre que los grafos simulados de dichos prototipos sean comparables al grafo de datos G 
-% (en términos de número de nodos y números de enlaces). Visualizar un ejemplo de grafo para cada uno de 
-% estos prototipos de redes. Discutir diferencias.}
-
-% A continuación, se enlistan los distintos parámetros utilizados para generar cada tipo
-% de grafo:
-
-% \begin{table}[h]
-%   \caption{Parámetros de las redes aleatorias}
-%   \begin{tabular}{lrrllll}
-%   \toprule
-%   Red & Nodos & Enlaces & Parámetro 2  &  & Parámetro 3 &  \\
-%       &       &         & (scale free y small world) &  & (small world) &  \\
-%   \midrule
-%   Poisson & 116 & 534 & - & - & - & - \\
-%   Small world & 116 & 464 & Vecinos conectados  & 9 & Prob. de  & 0.02 \\
-%               &     &     & a cada nodo         &    & re-conexión   &\\
-%   Libre de escala & 116 & 555 & Q de enlaces nuevos & 5 & - & - \\
-%                   &     &     &  por nodo nuevo     &&&\\
-%   \bottomrule
-%   \end{tabular}
-%   \end{table}
-  
-% Nota: para la red poissoniana no se aclaran parámetros extra porque los que se
-% utilizaron fueron al cantidad de nodos y la de enlaces.
-
-% Adicionalmente, se grafican los mismos con una disposición basada en 
-% el algoritmo de Fruchterman Reingold:
-
-% \begin{figure}[H]
-%   \centering  
-%   \includegraphics[width=.7\textwidth]{4_Sujeto2W.png}
-%   \caption{Visualización de un grafo de cada prototipo}
-% \end{figure}
-
-% Con respecto a la red poissoniana, no hay mucho para destacar, 
-% dado su comopnente aleatorio. La red Small-world llama la atención por
-% tener muchos nodos encadenados, con varios grupos de nodos sin esa
-% forma. Por último, la red libre de escala a simple vista tienen una forma
-% muy similar a la poissoniana.
-
-% \textit{5. Generar 1000 instancias de grafos para cada uno de dichos prototipos (poissonianas,
-% small-World y scale-free). Para el conjunto de 1000 instancias de cada prototipo, calcular el histograma de coeﬁcientes de < k >, kmax, C, y ef f . Comparar con los valores
-% de coeﬁcientes que obtuvimos para el grafo de datos G.}
-
-% \begin{figure}[H]
-%   \centering  
-%   \includegraphics[width=1\textwidth]{5_Sujeto2W.png}
-%   \caption{Comparación de métricas de grafo G con el resto}
-% \end{figure}
-
-% %TODO: comparar con los valores de coeficientes que obtuvimos para el grafo de datos G
-% Con respecto al grado promedio del grafo (K), se observa que el grafo G tienen el mismo valor que
-% la red poissoniana. La red Small-world tiene un menor grado promedio, lo cual hace sentido
-% con la imagen observada anteriormente, en donde una gran cantidad de nodos apenas se conectan
-% con otros dos. Por último, la red libre de escala tiene un grado promedio mayor que el grafo G;
-% indicando la presencia de hubs con alto grado.
-
-% En cuanto al grado máximo (kmax), se observa que el grafo G tiene un valor mayor que la Poisson.
-% También es mayor que el Small-world, cuyos valores están más concentrados que en la Poisson.
-% Por último, el grado máximo de G aparece entre los valores más chicos del grado máximo de la 
-% red libre de escala, acompañando la misma idea planteada para el grado promedio.
-
-% Tomando el coeficiente de clustering medio (C), el grafo G tiene un valor mayor que la red Poisson,
-% indicando que los vecinos de cada nodo están mucho más conectados. Por otro lado, el Small-world
-% tiene un valor más alto. Se puede entender que al tener una probalidad de reconexión baja (0.02)
-% la mayoría de los nodos están conectados con su primer y segundo vecino, los cuales estarían
-% conectados entre sí. Después, el libre de escalas tiene valores menores al del G, indicando
-% la presencia de hubs, que conectan nodos que no están conectados entre sí.
-
-% Finalmente, la efiencia global (eff) del grafo G es mucho menor que las tres redes. Esto evidencia
-% que la distancia promedio de los nodos de G es mucho mayor. De todas formas, el valor de G se acerca
-% a los valores mínimos de la Small-world, lo cual puede entenderse si tiene una probabildiad de reconexión
-% baja ya que es muy probable que tengas pocos atajos (enlace "recableado") para llegar de un nodo a otro.
+\printbibliography
 
 \end{document}
