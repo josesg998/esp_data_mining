@@ -1,7 +1,7 @@
 require("data.table")
 require("ggplot2")
 require("sf")
-require("dplyr")
+#require("dplyr")
 
 # Load data
 df <- fread('data/vdem_coup_EDA.csv')
@@ -21,10 +21,37 @@ df[df$country_name=='Tanzania','country_name'] <- "United Republic of Tanzania"
 
 mapamundi[mapamundi$geounit=='Falkland islands','sovereignt'] <- 'Argentina'
 
-df |> 
+
+# filter columns without suffixes
+df_nas <- df[,grep("_sd|_code(high|low)|_nr|_ord|_osp", names(df),invert=TRUE),with=F]
+
+
+df_nas <- df_nas[, lapply(.SD, function(x) sum(is.na(x))), by = year] |> 
+  melt.data.table(id.vars = 'year',variable.name = 'columna') |> 
+  merge(codebook[,c('tag','cb_section','metasection')],by.x='columna',by.y='tag')
+
+# filter df_nas with more than 0 nas by columna
+#sin_nulos <- df_nas[,.(nulos=sum(value)),by=columna]
+#sin_nulos <- as.vector(sin_nulos[nulos>0,columna])
+
+
+p_1 <- df_nas |> #[columna %in% sin_nulos] |> 
+  ggplot(aes(y=columna,x=year,fill=value))+
+    geom_tile()+
+    facet_wrap(~cb_section,scales = 'free_y',switch='y',ncol = 5)+
+    labs(x=element_blank(),y=element_blank(),fill='cantidad\nde nulos')+
+    theme(axis.text.y=element_blank(),
+          axis.ticks.y = element_blank(),
+          # reduce facet title size
+          strip.text = element_text(size = 7),
+          plot.background = element_rect(color='black'))
+ggsave('EDA/imagenes/1_nas.png',plot = p_1,width=10,height=14)
+
+#mapa mundial con golpes
+p_2 <- df |> 
   group_by(country_name) |> 
   summarise(coup=sum(coup)) |> 
-  mutate(coup=ifelse(coup==0,NA,coup)) |> 
+  #mutate(coup=ifelse(coup==0,NA,coup)) |> 
   select(country_name,coup) |> 
   merge(mapamundi,by.x='country_name',by.y='sovereignt',all.y=TRUE) |> 
   sf::st_as_sf() |> 
@@ -36,8 +63,9 @@ df |>
     # change legend title
     labs(fill='Cantidad\nde golpes')+
     theme(plot.background = element_rect(color='black'),legend.position='bottom')
+
 # save image
-ggsave('EDA/imagenes/1_golpes.png',width=10,height=5,)
+ggsave('EDA/imagenes/2_golpes.png',p_2,width=10,height=5,)
 
 
 df |> 
@@ -62,18 +90,7 @@ df |>
   ggplot()+
     geom_bar(aes(y=reorder(country_name,coup),x=coup),stat='identity')
   
-# count number of nas in df
-cols <- names(df)[!grepl("_sd|_code(high|low)|_nr|_ord|_osp",df)]
-nas <- df[,cols]
 
-nas|> 
-  summarise_all(~sum(is.na(.))) |> 
-  tidyr::gather() |> 
-  filter(value>0) |> 
-  ggplot(aes(x=key,y=value))+
-    geom_col()+
-    coord_flip()+
-    labs(title='Number of NAs in each column')
 
 ###### 
 #line plots
