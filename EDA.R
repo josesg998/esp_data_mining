@@ -1,7 +1,7 @@
 require("data.table")
 require("ggplot2")
 require("sf")
-#require("dplyr")
+require("dplyr")
 
 # Load data
 df <- fread('data/vdem_coup_EDA.csv')
@@ -10,7 +10,8 @@ df <- fread('data/vdem_coup_EDA.csv')
 
 df$decade <- floor(df$year/10)%%10
 df$decade <- paste0(df$decade,'0s')
-df$decade <- factor(df$decade,levels=c('40s','50s','60s','70s','80s','90s','00s','10s','20s'))
+df$decade <- factor(df$decade,
+levels=c('40s','50s','60s','70s','80s','90s','00s','10s','20s'))
 
 mapamundi <- read_sf('data/world.json')
 codebook <- vdemdata::codebook
@@ -38,7 +39,7 @@ df_nas <- df_nas[, lapply(.SD, function(x) sum(is.na(x))), by = year] |>
 p_1 <- df_nas |> #[columna %in% sin_nulos] |> 
   ggplot(aes(y=columna,x=year,fill=value))+
     geom_tile()+
-    facet_wrap(~cb_section,scales = 'free_y',switch='y',ncol = 5)+
+    facet_wrap(~cb_section,scales = 'free_y',strip.position = 'left',ncol = 5)+
     labs(x=element_blank(),y=element_blank(),fill='cantidad\nde nulos')+
     theme(axis.text.y=element_blank(),
           axis.ticks.y = element_blank(),
@@ -62,10 +63,35 @@ p_2 <- df |>
     scale_fill_viridis_d()+
     # change legend title
     labs(fill='Cantidad\nde golpes')+
-    theme(plot.background = element_rect(color='black'),legend.position='bottom')
+    theme(plot.background = element_rect(color='black',fill='white'),
+    legend.position='bottom')
 
 # save image
 ggsave('entregas/imagenes/2_golpes.png',p_2,width=10,height=5,)
+
+p_3 <- df |> 
+  group_by(country_name,year) |> 
+  summarise(coup=sum(coup)) |> 
+  merge(mapamundi[,c('admin','region_wb','name_es')],
+        by.x='country_name',by.y='admin') |> 
+  mutate(coup=ifelse(coup==0,'no','si'),
+         region_wb=ifelse(region_wb %in% c('North America','Latin America & Caribbean'),                          'America',region_wb),
+          name_es=gsub('República Democrática','RD',name_es),
+          name_es=gsub('República','Rep',name_es)) |>
+  ggplot(aes(x=year,fill=coup,y=name_es))+
+    geom_tile()+
+    scale_fill_viridis_d()+
+    facet_col(vars(region_wb), scales='free_y', space = "free",strip.position='left')+
+    labs(x=element_blank(),y=element_blank(),fill='Golpe')+
+    # fix the height of facets according to the amount of countries
+    # reduce space between axis y and plot
+    theme(
+          strip.text = element_text(size = 7),
+          plot.background = element_rect(color='black'),
+          strip.background = element_rect(color='black'),
+          strip.placement = 'outside')
+
+ggsave('entregas/imagenes/3_golpes_anios.png',plot = p_3,width=10,height=15)
 
 
 df |> 
