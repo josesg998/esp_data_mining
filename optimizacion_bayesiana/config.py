@@ -9,7 +9,7 @@ def config(modelo):
         {'train':(1970,2013),'val':(2014,2015)},
         {'train':(1970,2015),'val':(2016,2017)},
         {'train':(1970,2017),'val':(2018,2019)}],
-        'input':'data/vdem_coup.pkl'
+        'input':'data/vdem_coup_ML.pkl'
     }
     
     if modelo=='RF': # Random Forest
@@ -32,6 +32,7 @@ def config(modelo):
             'model':XGBClassifier(),
             'output':'optimizacion_bayesiana/logs/OB_XGB_log.csv',
             'space':{
+                'n_estimators':1000,
                 'reg_lambda': hp.uniform('reg_lambda', 0.1, 10),
                 'learning_rate': hp.uniform('learning_rate', 0.01, 0.3),
                 },
