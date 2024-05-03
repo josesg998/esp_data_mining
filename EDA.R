@@ -2,9 +2,12 @@ require("data.table")
 require("ggplot2")
 require("sf")
 require("dplyr")
+require('ggforce')
+require("vdemdata")
 
 # Load data
 df <- fread('data/vdem_coup_EDA.csv')
+codebook <- vdemdata::codebook
 
 # get third position of column number
 
@@ -93,7 +96,6 @@ p_3 <- df |>
 
 ggsave('entregas/imagenes/3_golpes_anios.png',plot = p_3,width=10,height=15)
 
-
 df |> 
   group_by(decade,country_name) |> 
   summarise(coup=sum(coup)) |> 
@@ -107,17 +109,6 @@ df |>
     theme_minimal()+
     scale_fill_viridis_c()
   
-# TODO idear mejor visualizacion
-df |> 
-  group_by(country_name) |> 
-  summarise(coup=sum(coup)) |> 
-  select(country_name,coup) |> 
-  filter(coup>0) |> 
-  ggplot()+
-    geom_bar(aes(y=reorder(country_name,coup),x=coup),stat='identity')
-  
-
-
 ###### 
 #line plots
 lines_countries <- function(df,country,column){
