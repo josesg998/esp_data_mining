@@ -47,7 +47,9 @@ vdem_post_1945[which(paste(vdem_post_1945$country_name, vdem_post_1945$year)
                 %in% paste(powell_and_thyne$country, powell_and_thyne$year)),]$coup <- 1
 
 # write csv file
-fwrite(vdem_post_1945, "data/vdem_coup_EDA.csv")
+# fwrite(vdem_post_1945, "data/vdem_coup_EDA.csv")
+# para azure
+fwrite(vdem_post_1945, "../../../data/vdem_coup_ML.csv")
 
 # pasamos de 4608 columnas a 1459
 vdem_post_1945 <- vdem_post_1945[,!grepl("_sd|_code(high|low)|_nr|_ord|_osp", names(vdem_post_1945))]
@@ -62,4 +64,6 @@ pd <- import("pandas")
 vdem_post_1945_py <- r_to_py(vdem_post_1945)
 
 # Save the Python data frame as a pickle file
-pd$to_pickle(vdem_post_1945_py, "data/vdem_coup_ML.pkl")
+# pd$to_pickle(vdem_post_1945_py, "data/vdem_coup_ML.pkl")
+# para azure
+pd$to_pickle(vdem_post_1945_py, "../../../data/vdem_coup_ML.pkl")
