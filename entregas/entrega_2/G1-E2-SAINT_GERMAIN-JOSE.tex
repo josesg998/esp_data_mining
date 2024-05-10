@@ -79,12 +79,13 @@ del mismo.
 
 % TODO incluir explicacíón de los Shapley Values
 Una vez realizada la optimización bayesiana, se toman los valores de hiperparámetros
-que lograron maximizar el AUC y se entrena el modelo con el set de entrenamiento para
-intentar predecir los golpes de estado entre 2020 y 2022. Por último, para intepretar
-las variables más importantes en la predicción de golpes de estado, se utilizarán los
-valores Shapley (\cite{Str10}; \cite{Lun17}). Basado en la teoría de juegos, los
-valores Shapley buscan medir la contribución de cada predictor aa la probabilidad de
-un golpe en relación con la probabilidad promedio de la muestra prevista de un golpe.
+que lograron maximizar el AUC y se entrena el modelo con el set de entrenamiento 
+para intentar predecir los golpes de estado entre 2020 y 2022. Por último, para 
+intepretar las variables más importantes en la predicción de golpes de estado, se 
+utilizarán los valores Shapley (\cite{Str10}; \cite{Lun17}). Basado en la teoría de 
+juegos, los valores Shapley buscan medir la contribución de cada predictor aa la 
+probabilidad de un golpe en relación con la probabilidad promedio de la muestra 
+prevista de un golpe.
 
 \section{Análisis Exploratorio de Datos}
 
@@ -94,8 +95,8 @@ variables centrales se obtienen a partir de encuestas suministradas a expertos
 sobre los distintos países. Inicialmente, se busca que cada país cuente con al menos
 cinco expertos. Actualmente, la institución cuenta con 22 expertos promedio por país
 y 7,1 experots por combinación de variable y país. Una vez obtenida las respuestas
-de los expertos, se pasa al proceso de agregación para así conformar una base de datos
-donde cada fila corresopnda a un país en un año específico. De esta agregación
+de los expertos, se pasa al proceso de agregación para así conformar una base de 
+datos donde cada fila corresopnda a un país en un año específico. De esta agregación
 obtienen diferentes versiones de la misma variable:
 
 \begin{itemize}
@@ -165,10 +166,10 @@ De esa manera, la base filtrada cuenta con 12208 filas y 1460 columnas.
 Debido a la alta cantidad de variables, no es posible realizar un análisis
 pormenorizado de la presencia de nulos en cada una. Por ese motivo, se decidió
 visualizar la misma mediante los agrupadores de variables con las que cuenta el
-codebook de V-Dem. El mismo, discrimina las variables a partir de sus temas en común.
-De esa manera, en la figura ~\ref{fig:nas} la cantidad de nulos por categoría de variable
-expresado en un mapa de calor, donde cada fila es una variable individual y las
-columnas los diferentes años del panel.
+codebook de V-Dem. El mismo, discrimina las variables a partir de sus temas en 
+común. De esa manera, en la figura ~\ref{fig:nas} la cantidad de nulos por 
+categoría de variable expresado en un mapa de calor, donde cada fila es una 
+variable individual y las columnas los diferentes años del panel.
 
 \begin{figure}[H]
   \centering  
@@ -188,12 +189,16 @@ En segundo lugar, figuran casos contrarios, en donde a partir de determinado añ
 la cantidad de datos faltantes salta a la totalidad de los casos. En este grupo
 figuran las variables asociadas a instituciones y eventos políticos (e13), cuya 
 fuente es un artículo de Przeworski de 2013; las variables cuya fuente es la base
-de datos polity V (e14); las variables sobre educación (aumentan los nulos en algunas 
-variables) (eb1); las variables sobre recursos naturales (eb5), cuya fuente tiene
-datos hasta 2006; las variables sobre infraestructura (eb6); y las relacionadas a 
-conflictos (eb8). En general, esta discontinuidad sucede debido a que la información
-de estas variables provienen de fuentes externas no gestionadas por V-Dem, las cuales
-finalizaron su serie en un año puntual.
+de datos polity V (e14); las variables sobre educación (aumentan los nulos en 
+algunas variables) (eb1); las variables sobre recursos naturales (eb5), cuya fuente 
+tiene datos hasta 2006; las variables sobre infraestructura (eb6); y las relacionadas 
+a conflictos (eb8). En general, esta discontinuidad sucede debido a que la 
+información de estas variables provienen de fuentes externas no gestionadas por 
+V-Dem, las cuales finalizaron su serie en un año puntual.
+
+Por último figuran los grupos de variables asociados a la base de datos histórica
+de v-dem (las que comienzan con hist), lo cual es lógico puesto que esta base busca
+tomar datos previos a 1900.
 
 \subsection{Análisis de variable objetivo}
 
@@ -202,21 +207,21 @@ de golpes de estado sucedidos en un período de tiempo, sino que simplemente rel
 si al menos un golpe de estado sucedió en un país y año determinado. Por lo tanto, si
 un país sufrió más de un golpe de estado en un año, el mismo será contabilizado una
 sola vez. Adicionalmente, en este trabajo también se consideran los golpes de estado
-que no fueron exitosos, es decir, que no lograron derrocar al gobierno en cuestión. De
-allí se desprende que países como Argentina, que en total ha tenido seis golpes de estado
-exitosos, figure con el doble de golpes en la figura ~\ref{fig::mapa_golpes}.
+que no fueron exitosos, es decir, que no lograron derrocar al gobierno en cuestión. 
+De allí se desprende que países como Argentina, que en total ha tenido seis golpes de 
+estado exitosos, figure con el doble de golpes en la figura ~\ref{fig::mapa_golpes}.
 
 Para realizar un paneo general de la variable objetivo, es decir, la presencia de
 estado a lo largo de los años, generamos un conteo y lo visualizamos en un 
-planisferio. Destacamos que la mayor presencia de golpes se encuentra en el continente
-africano, en América del Sur y parte del Caribe, Medio Oriente y el Sudeste Asiático, 
-con algunos casos de apenas un golpe en España, Rusia, Ucrania y Corea del Sur; así como
-dos y tres golpes en Grecia y Portugal, respectivamente.
+planisferio. Destacamos que la mayor presencia de golpes se encuentra en el 
+continente africano, en América del Sur y parte del Caribe, Medio Oriente y el 
+Sudeste Asiático, con algunos casos de apenas un golpe en España, Rusia, Ucrania 
+y Corea del Sur; así como dos y tres golpes en Grecia y Portugal, respectivamente.
 
 Con mayor precisión, observamos que la región del Sahel se destaca con respecto a sus
 vecinos africanos. Los países en donde más golpes de estado se han producido son
-Bolivia (17), Sudán (14), Argentina (13), Ecuador (11), Iraq (11), Siria(11), Guatemala
-(10) y Tailandia (10).
+Bolivia (17), Sudán (14), Argentina (13), Ecuador (11), Iraq (11), Siria(11), 
+Guatemala (10) y Tailandia (10).
 
 \begin{figure}[H]
   \centering  
@@ -224,20 +229,19 @@ Bolivia (17), Sudán (14), Argentina (13), Ecuador (11), Iraq (11), Siria(11), G
   \caption{Conteo de golpes de estado en el mundo\label{fig::mapa_golpes}}
 \end{figure}
 
-Desagregando por década se observan algunos cambios, así como la persistencia en algunas
-regiones. La región del Sahel y varias naciones circundantes fueron persistentemente afectadas
-por golpes de estado desde los años 60. En América del Sur, en cambio, la presencia casi total
-de situaciones golpistas en la región se fue acotando a partir de los años 80 hasta finalmente
-desaparecer en el siglo xxi. Para observar con más detalle y discriminado por años y países se
-puede ver la figura ~\ref{fig:golpes_anios}.
+Desagregando por década se observan algunos cambios, así como la persistencia en 
+algunas regiones. La región del Sahel y varias naciones circundantes fueron 
+persistentemente afectadas por golpes de estado desde los años 60. En América del 
+Sur, en cambio, la presencia casi total de situaciones golpistas en la región se 
+fue acotando a partir de los años 80 hasta finalmente desaparecer en el siglo 
+xxi. Para observar con más detalle y discriminado por años y países se puede ver 
+la figura ~\ref{fig:golpes_anios}.
 
 \begin{figure}[H]
   \centering  
   \includegraphics[width=1\textwidth]{3_golpes_decadas.png}
   \caption{Conteo de golpes por década}
 \end{figure}
-
-% hacer referencia a la figura 3
 
 \section{Correlación entre variables}
 
