@@ -42,10 +42,10 @@ df_nas <- df_nas[, lapply(.SD, function(x) sum(is.na(x))), by = year] |>
         by.x="columna",by.y="tag")
 
 sections <- list(
-  "ca_" = "Espacio cívico y académico",
+  "ca_" = "Espacio cívico\ny académico",
   "cl"  = "Libertad civil",
   "cs"  = "Sociedad civil",
-  "dd"  = "Democracia directa",
+  "dd"  = "Democracia\ndirecta",
   "de"  = "Demografía",
   "dl"  = "Deliberación",
   "el"  = "Elecciones",
@@ -54,14 +54,15 @@ sections <- list(
   "ju"  = "Poder judicial",
   "leg" = "Legitimación",
   "lg"  = "Legislatura",
-  "me"  = "Medios de comunicación",
+  "me"  = "Medios de\ncomunicación",
   "pe"  = "Igualdad política",
   "ps"  = "Partidos políticos",
   "sv"  = "Soberanía",
   "st"  = "Estado",
   "x"   = "Índice",
-  "zz"  = "Cuestionario posterior a la encuesta",
-  "ws"  = "Encuesta de sociedad digital"
+  "zz"  = "Cuestionario posterior\na la encuesta",
+  "ws"  = "Encuesta de\nsociedad digital",
+  "partysystems" = "Encuesta de sistemas\nde partidos políticos"
 )
 
 detectar <- function(x){
@@ -91,7 +92,7 @@ p_1 <- df_nas |> #[columna %in% sin_nulos] |>
           # reduce facet title size
           strip.text = element_text(size = 7),
           plot.background = element_rect(color="black"))
-ggsave("entregas/imagenes/1_nas.png",plot = p_1,width=10,height=7)
+ggsave("entregas/imagenes/1_nas.png",plot = p_1,width=10,height=8.5)
 
 #mapa mundial con golpes
 p_2 <- df |> 
@@ -150,7 +151,7 @@ p_4 <- df |>
           strip.background = element_rect(color="black"),
           strip.placement = "outside")
 
-ggsave("entregas/imagenes/4_golpes_anios.png",plot = p_4,width=10,height=13)
+ggsave("entregas/imagenes/4_golpes_anios.png",plot = p_4,width=10,height=14)
 
 
 # plot correlation matrix
@@ -168,16 +169,17 @@ cor_mtx_g <-  cor_group[,mean(value),by=list(country_id,year,label)]|>
   # mutate(label=gsub(' ','\n',label))|>
   reshape2::dcast(country_id+year~label,value.var="V1")|>  
   select(-country_id,-year)|>  
-  cor(use='pairwise.complete.obs')#|> reshape2::melt()
+  cor(use='pairwise.complete.obs')
 
-require("corrplot")
 png("entregas/imagenes/5_correlacion_grupos.png",
     height=12,width=12,units="in",res=300)
-p_5 <- corrplot:corrplot.mixed(cor_mtx_g,tl.pos = 'lt')
+p_5 <- corrplot.mixed(cor_mtx_g,tl.pos = 'lt')
 # add black border to surround the plot
-rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], border = "black")
+rect(par("usr")[1], par("usr")[3], 
+     par("usr")[2], par("usr")[4], border = "black")
 dev.off()
 
+table(cor_mtx_g_long[,cor_d])
 
 cor_mtx <- df[,grep(pattern=sufijos, names(df),invert=TRUE), with=F]|>
   select_if(is.numeric)|>

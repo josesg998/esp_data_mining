@@ -48,11 +48,9 @@ Los algoritmos que se utilizarán serán Random Forest (\cite{Bre01}) y XGBoost
 (\cite{Che16}). Adicionalmente, para la evaluación de performance se utilizará 
 el área bajo la curva (AUC), en donde un valor de AUC de 0.5 indica que el modelo 
 no tiene capacidad predictiva, mientras que un valor cercano a 1 indica que el 
-modelo es capaz de predecir con alta precisión. 
-
-Con respecto al ajuste de hiperparámetros se utilizará la optimización bayesiana.
-La misma consistirá en 100 iteraciones en donde se buscará el valor óptimo de los
-siguientes hiperparámetros:
+modelo es capaz de predecir con alta precisión. Con respecto al ajuste de 
+hiperparámetros se utilizará la optimización bayesiana. La misma consistirá en 100 
+iteraciones en donde se buscará el valor óptimo de los siguientes hiperparámetros:
 
 % agregar lista de viñetas
 \begin{itemize}
@@ -163,10 +161,21 @@ no sean las principales, es decir, que no cuenten con sufijo. De esa manera,
 se busca reducir el tamaño de la base y así poder agregar nuevas columnas
 mediante ingeniería de atributos. En segundo lugar, se filtraron los años 
 superiores a 1950, para adecuarnos al periodo utilizado en el artiçulo del FMI.
-De esa manera, la base filtrada cuenta con 12208 filas y 1460 columnas.
-%TODO chequear si  voy a seguir filtrando cosas
+De esa manera, la base filtrada cuenta con 12208 filas y 1460 columnas. Por último,
+se remueven todas las variables de fuentes externas (cuyo agrupador comienza con
+'e'), las variables pertenecientes a la base histórica (agrupador 'hist') y las
+de la encuesta de sistema de partidos políticos; en parte debido a que provienen
+de fuentes agenas a V-Dem que pueden comprometer la completitud futura de los datos
+y en parte porque algunas de estas variables cuentas con alta tasa de nulos.
 
 \subsection{Ánalisis de nulos}
+
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{1_nas.png}
+  \caption{Conteo de nulos por año y agrupador de variables\label{fig:nas}}
+\end{figure}
+
 Debido a la alta cantidad de variables, no es posible realizar un análisis
 pormenorizado de la presencia de nulos en cada una. Por ese motivo, se decidió
 visualizar la misma mediante los agrupadores de variables con las que cuenta el
@@ -174,12 +183,6 @@ codebook de V-Dem. El mismo, discrimina las variables a partir de sus temas en
 común. De esa manera, en la figura ~\ref{fig:nas} la cantidad de nulos por 
 categoría de variable expresado en un mapa de calor, donde cada fila es una 
 variable individual y las columnas los diferentes años del panel.
-
-\begin{figure}[H]
-  \centering  
-  \includegraphics[width=1\textwidth]{1_nas.png}
-  \caption{Conteo de nulos por año y agrupador de variables\label{fig:nas}}
-\end{figure}
 
 De este gráfico podemos aprehender ciertos patrones sobre la presencia de nulos
 en algunos grupos de variables: En primer lugar, observamos variables que,
@@ -216,22 +219,22 @@ De allí se desprende que países como Argentina, que en total ha tenido seis go
 estado exitosos, figure con el doble de golpes en la figura ~\ref{fig::mapa_golpes}.
 
 Para realizar un paneo general de la variable objetivo, es decir, la presencia de
-estado a lo largo de los años, generamos un conteo y lo visualizamos en un 
+golpes de estado a lo largo de los años, generamos un conteo y lo visualizamos en un 
 planisferio. Destacamos que la mayor presencia de golpes se encuentra en el 
 continente africano, en América del Sur y parte del Caribe, Medio Oriente y el 
 Sudeste Asiático, con algunos casos de apenas un golpe en España, Rusia, Ucrania 
 y Corea del Sur; así como dos y tres golpes en Grecia y Portugal, respectivamente.
-
-Con mayor precisión, observamos que la región del Sahel se destaca con respecto a sus
-vecinos africanos. Los países en donde más golpes de estado se han producido son
-Bolivia (17), Sudán (14), Argentina (13), Ecuador (11), Iraq (11), Siria(11), 
-Guatemala (10) y Tailandia (10).
 
 \begin{figure}[H]
   \centering  
   \includegraphics[width=1\textwidth]{2_golpes.png}
   \caption{Conteo de golpes de estado en el mundo\label{fig::mapa_golpes}}
 \end{figure}
+
+Con mayor precisión, observamos que la región del Sahel se destaca con respecto a sus
+vecinos africanos. Los países en donde más golpes de estado se han producido son
+Bolivia (17), Sudán (14), Argentina (13), Ecuador (11), Iraq (11), Siria(11), 
+Guatemala (10) y Tailandia (10).
 
 Desagregando por década se observan algunos cambios, así como la persistencia en 
 algunas regiones. La región del Sahel y varias naciones circundantes fueron 
@@ -264,14 +267,15 @@ apreciar en la figura ~\ref{fig:correlacion_gp}.
 \end{figure}
 
 %TODO intentar concluir algo de esto
-El primer comentario a la figura surge de la fuerte correlación negativa que el grupo
+De este gráfico podemos destacar la alta correlación negativa que el grupo
 'democracia directa' tiene con varios grupos: 'encuesta de sociedad digital', con el 
 grupo de los 'índices', el de 'partidos políticos', el de 'partysystems', el de 
 'soberanía' y con el de 'sociedad civil'. Por otro lado, correlaciona fuertemente 
-pero de manera positiva con los grupos de 'demografía' e 'igualdad política'. Otras
-fuertes correlaciones a mencionar son entre el grupo 'elecciones' y 'espacio cívico y 
-académico', entre el de 'sociedad civil' y el de 'índice', entre 'partidos políticos' e
-'índice'.
+pero de manera positiva con los grupos de 'demografía' e 'igualdad política'. Por último, 
+otras fuertes correlaciones a mencionar son entre el grupo 'elecciones' y 'espacio cívico 
+y académico', entre el de 'sociedad civil' y el de 'índice', entre 'partidos políticos' e
+'índice'. Tiene sentido que el grupo Índice correlacion con otros, puesto a que está
+conformado por otras variables pertenecientes a los mismos.
 
 \section{Anexo}
 
