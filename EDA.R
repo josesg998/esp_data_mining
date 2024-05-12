@@ -7,47 +7,33 @@ require("vdemdata")
 
 # Load data
 df <- fread("data/vdem_coup_EDA.csv")
-codebook <- vdemdata::codebook |> setDT()
 
-# get third position of column number
+df[country_name=="Türkiye","country_name"] <- "Turkey"
+df[country_name=="Burma/Myanmar","country_name"] <- "Myanmar"
+df[country_name=="Tanzania","country_name"] <- "United Republic of Tanzania"
+df[,decade:=paste0(floor(year/10)%%10,'0s')]
+df[,decade:=factor(decade,
+    levels=c("40s","50s","60s","70s","80s","90s","00s","10s","20s"))]
 
-df$decade <- floor(df$year/10)%%10
-df$decade <- paste0(df$decade,"0s")
-df$decade <- factor(df$decade,
-levels=c("40s","50s","60s","70s","80s","90s","00s","10s","20s"))
+# drop e_region_geo, e_regionpol, e_regionpol_6C
+df[,c("e_regiongeo", "e_regionpol", "e_regionpol_6C") := NULL]
+
+df[,e_regionpol_7C:=factor(
+    e_regionpol_7C,levels=1:7,labels=c(
+    "Europa del Este","América Latina y el Caribe",
+    "Medio Oriente y África del Norte","África Subsahariana",
+    "Europa Occidental y América del Norte",
+    "Asia Oriental y el Pacífico","Asia del Sur y Central")
+  )]
 
 mapamundi <- read_sf("data/world.json")
-codebook <- vdemdata::codebook
-
-df[df$country_name=="Türkiye","country_name"] <- "Turkey"
-df[df$country_name=="Burma/Myanmar","country_name"] <- "Myanmar"
-df[df$country_name=="Tanzania","country_name"] <- "United Republic of Tanzania"
 
 mapamundi[mapamundi$geounit=="Falkland islands","sovereignt"] <- "Argentina"
 
-sections <- list(
-  "ca"    =  "Espacio cívico y académico",
-  "cl"    =  "Libertad civil",
-  "dd"    =  "Democracia directa",
-  "de"    =  "Demografía",
-  "dl"    =  "Deliberación",
-  "el"    =  "Elecciones",
-  "ex"    =  "Ejecutivo",
-  "exl"   =  "Legitimación",
-  "ju"    =  "Poder judicial",
-  "lg"    =  "Legislatura",
-  "me"    =  "Medios de comunicación",
-  "pe"    =  "Igualdad política",
-  "ps"    =  "Partidos políticos",
-  "sv/st" =  "Soberanía/Estado",
-  "x"     =  "Índice",
-  "zz"    =  "Cuestionario posterior a la encuesta",
-  'ws'    =  'Encuesta internet'
-)
-
+sufijos <- "_sd|_code(high|low)|_nr|_ord|_osp|_mean"
 
 # filter columns without suffixes
-df_nas <- df[,grep("_sd|_code(high|low)|_nr|_ord|_osp",
+df_nas <- df[,grep(sufijos,
                    names(df),invert=TRUE),with=F]
 
 df_nas <- df_nas[, lapply(.SD, function(x) sum(is.na(x))), by = year] |> 
@@ -55,45 +41,46 @@ df_nas <- df_nas[, lapply(.SD, function(x) sum(is.na(x))), by = year] |>
   merge(codebook[,c("tag","cb_section","metasection")],
         by.x="columna",by.y="tag")
 
-rep_list <- list(
-  'ca_' = 'ca',  'cl' = 'cl',  'dd' = 'dd',  'de' = 'de',
-  'dl' = 'dl',  'el' = 'el',  'ex' = 'ex',  'exl' = 'exl',
-  'ju' = 'ju',  'lg' = 'lg',  'me' = 'me',  'pe' = 'pe',
-  'ps' = 'ps',  'sv' = 'sv',  'x' = 'x',  'e' = 'e'
+sections <- list(
+  "ca_" = "Espacio cívico y académico",
+  "cl"  = "Libertad civil",
+  "cs"  = "Sociedad civil",
+  "dd"  = "Democracia directa",
+  "de"  = "Demografía",
+  "dl"  = "Deliberación",
+  "el"  = "Elecciones",
+  "ex"  = "Ejecutivo",
+  "exl" = "Legitimación",
+  "ju"  = "Poder judicial",
+  "leg" = "Legitimación",
+  "lg"  = "Legislatura",
+  "me"  = "Medios de comunicación",
+  "pe"  = "Igualdad política",
+  "ps"  = "Partidos políticos",
+  "sv"  = "Soberanía",
+  "st"  = "Estado",
+  "x"   = "Índice",
+  "zz"  = "Cuestionario posterior a la encuesta",
+  "ws"  = "Encuesta de sociedad digital"
 )
 
-detectar_y_reemplazar <- function(columna,lista) {
-  resultado <- sapply(columna, function(x) {
-    for (clave in names(lista)) {
-      if (grepl(paste0("^", clave), x)) {
-        return(lista[[clave]])
-      }
+detectar <- function(x){
+  for (clave in names(sections)) {
+    if (grepl(paste0("^", clave), x)) {
+      x <- sections[[clave]]
     }
-    return(x)
-  })
-  return(resultado)
+  }
+  return(x)
 }
 
-df_nas[, seccion := detectar_y_reemplazar(cb_section,rep_list)]
-df_nas[, label := detectar_y_reemplazar(cb_section,sections)]
+df_nas[, label := sapply(cb_section,function(x) detectar(x))]
 
-codebook$section_new <- detectar_y_reemplazar(codebook$cb_section,rep_list)
-codebook$cb_section <- tolower(codebook$cb_section)
-codebook$label <- detectar_y_reemplazar(codebook$cb_section,sections)
+codebook <- vdemdata::codebook
+codebook <- setDT(codebook)
+
+codebook[,label := sapply(cb_section, function(x) detectar(x))]
 
 # analisis de nulos
-# p_1 <- df_nas |> #[columna %in% sin_nulos] |> 
-#   ggplot(aes(y=columna,x=year,fill=value))+
-#     geom_tile()+
-#     facet_wrap(~cb_section,scales = "free_y",strip.position = "left",ncol = 5)+
-#     labs(x=element_blank(),y=element_blank(),fill="cantidad\nde nulos")+
-#     theme(axis.text.y=element_blank(),
-#           axis.ticks.y = element_blank(),
-#           # reduce facet title size
-#           strip.text = element_text(size = 7),
-#           plot.background = element_rect(color="black"))
-# ggsave("entregas/imagenes/1_nas.png",plot = p_1,width=10,height=14)
-
 p_1 <- df_nas |> #[columna %in% sin_nulos] |> 
   ggplot(aes(y=columna,x=year,fill=value))+
     geom_tile()+
@@ -104,7 +91,7 @@ p_1 <- df_nas |> #[columna %in% sin_nulos] |>
           # reduce facet title size
           strip.text = element_text(size = 7),
           plot.background = element_rect(color="black"))
-ggsave("entregas/imagenes/1_nas.png",plot = p_1,width=10,height=10)
+ggsave("entregas/imagenes/1_nas.png",plot = p_1,width=10,height=7)
 
 #mapa mundial con golpes
 p_2 <- df |> 
@@ -150,110 +137,84 @@ p_3 <- df |>
 ggsave("entregas/imagenes/3_golpes_decadas.png",p_3,width=9,height=5)
 
 p_4 <- df |> 
-  group_by(country_name,year) |> 
-  summarise(coup=sum(coup)) |> 
-  merge(mapamundi[,c("admin","region_wb","name_es")],
-        by.x="country_name",by.y="admin") |> 
-  mutate(coup=ifelse(coup==0,"no","si"),
-         region_wb=ifelse(region_wb %in% c("North America","Latin America & Caribbean"),
-                          "America",region_wb),
-          name_es=gsub("República Democrática","RD",name_es),
-          name_es=gsub("República","Rep",name_es)) |>
-  ggplot(aes(x=year,fill=coup,y=name_es))+
+  mutate(coup=ifelse(coup==0,"no","si")) |>
+  ggplot(aes(x=year,fill=coup,y=country_text_id))+
     geom_tile()+
     scale_fill_viridis_d()+
-    facet_col(vars(region_wb), scales="free_y", space = "free",strip.position="left")+
+    facet_col(vars(e_regionpol_7C), scales="free_y",
+              space = "free",strip.position="left")+
     labs(x=element_blank(),y=element_blank(),fill="Golpe")+
-    # fix the height of facets according to the amount of countries
-    # reduce space between axis y and plot
-    theme(
+    theme(axis.text.y=element_text(size=6),
           strip.text = element_text(size = 7),
           plot.background = element_rect(color="black"),
           strip.background = element_rect(color="black"),
           strip.placement = "outside")
 
-ggsave("entregas/imagenes/4_golpes_anios.png",plot = p_4,width=10,height=15)
+ggsave("entregas/imagenes/4_golpes_anios.png",plot = p_4,width=10,height=13)
 
 
 # plot correlation matrix
-require("Hmisc")
-require("ggpubr")
-
-# p_5 <- df[,grep("_sd|_code(high|low)|_nr|_ord|_osp", names(df),invert=TRUE),
-#           with=F]|>   
-#   select(-coup,-country_text_id,-historical_date,-histname,-codingstart,
-#          -codingend,-codingstart_contemp,-codingend_contemp,-codingstart_hist,
-#          -codingend_hist,-country_name,-country_id)|>  
-#   select_if(is.numeric)|>
-#   cor(use='pairwise.complete.obs') |> reshape2::melt() |>setDT()|>
-#   merge.data.table(codebook[,c("tag","name",'section_new','label')],
-#   by.x="Var1",by.y="tag")|>
-#   # reorder by section_new
-#   arrange(label)|>
-#   filter(!is.na(value))|>
-#   filter(Var1!=Var2)|>
-#   #positivize correlation
-#   mutate(value=ifelse(value<0,-value,value))|>
-#   ggplot()+
-#     geom_tile(aes(x=Var1,y=Var2,fill=cut(value,breaks=seq(-1,1,.25))))+
-#     scale_fill_viridis_d()+
-#     labs(fill='corr',x=element_blank(),y=element_blank())+
-#     # facet_grid(~label,scales="free")+
-#     theme(plot.background = element_rect(color="black"),
-#           # rotate x axis labels
-#           axis.text.x = element_text(angle = 90, hjust = 1),
-#           legend.position = 'top')
-# ggsave("entregas/imagenes/5_correlacion.png",plot = p_5)
-
-# voy plotear la correlacion enter
-
-# cor <- df[,grep("_sd|_code(high|low)|_nr|_ord|_osp|_mean", names(df),invert=TRUE),
-#           with=F]|>   
-#   select(-country_text_id,-historical_date,-histname,-codingstart,
-#          -codingend,-codingstart_contemp,-codingend_contemp,-codingstart_hist,
-#          -codingend_hist,-country_name,-country_id)|>  
-#   select_if(is.numeric)|>
-#   cor(use='pairwise.complete.obs') |> reshape2::melt() |>
-#   merge(codebook[,c("tag","name",'section_new','label')],
-#         by.x="Var2",by.y="tag")|>
-#   mutate(pair=paste(Var1,Var2,sep=" + "))|>
-#   filter(abs(value)>.75)
-
-
-# ggsave("entregas/imagenes/5_correlacion.png",plot = p_5)
-
 
 # probamos agrupando en grupos de variables
-cor_group <- df[,grep("_sd|_code(high|low)|_nr|_ord|_osp|_mean", names(df),invert=TRUE),
-          with=F]|>
+cor_group <- df[,grep(pattern=sufijos, names(df),invert=TRUE), with=F]|>
   select_if(is.numeric)|>
-  reshape2::melt(id.vars=c("year",'country_id'))|>
+  data.table::melt.data.table(id.vars=c("year",'country_id'))|>
   merge.data.table(codebook[,c("tag",'label')],
         by.x="variable",by.y="tag")|>setDT()
 
-cor_group[cor_group$variable=='coup','label'] <- 'TARGET'
+cor_mtx_g <-  cor_group[,mean(value),by=list(country_id,year,label)]|>
+  filter(!grepl('^(((e|eb)[0-9])|hist)',label))|>
+  filter(label!='id')|>
+  # mutate(label=gsub(' ','\n',label))|>
+  reshape2::dcast(country_id+year~label,value.var="V1")|>  
+  select(-country_id,-year)|>  
+  cor(use='pairwise.complete.obs')#|> reshape2::melt()
 
-p_5 <- cor_group[!is.na(value),mean(value,na.rm=T),by=list(country_id,year,label)]|>
-  filter(!grepl('((e|eb[0-9])|hist)',label))|>
-  # filter(!label%in% c('id','year'))|>
-  reshape2::dcast(country_id+year~label,value.var="V1")|>
-  cor(use='pairwise.complete.obs')|> reshape2::melt() |>  
-  ggplot()+
-    geom_tile(aes(x=Var1,y=Var2,fill=cut(value,breaks=seq(-1,1,.25))))+
-    scale_fill_viridis_d()+
-    labs(fill='corr',x=element_blank(),y=element_blank())+
+require("corrplot")
+png("entregas/imagenes/5_correlacion_grupos.png",
+    height=12,width=12,units="in",res=300)
+p_5 <- corrplot:corrplot.mixed(cor_mtx_g,tl.pos = 'lt')
+# add black border to surround the plot
+rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], border = "black")
+dev.off()
+
+
+cor_mtx <- df[,grep(pattern=sufijos, names(df),invert=TRUE), with=F]|>
+  select_if(is.numeric)|>
+  cor(use='pairwise.complete.obs')|> reshape2::melt()|>
+  merge.data.table(codebook[,c("tag",'label')],
+        by.x="Var1",by.y="tag")|>
+  merge.data.table(codebook[,c("tag",'label')],
+        by.x="Var2",by.y="tag")|>setDT()|>  
+  filter(!grepl('^(((e|eb)[0-9])|hist)',label.x)|
+         !grepl('^(((e|eb)[0-9])|hist)',label.y))|>
+  filter(label.x!='id'|label.y!='id')|>  
+  filter(label.x==label.y)
+
+p_6 <- cor_mtx |> 
+  ggplot(aes(x=reorder(Var1,value),
+             y=reorder(Var2,value),
+             fill=cut(value,seq(-1,1,.25))))+
+    geom_tile()+   
+    scale_fill_viridis_d()+    
+    labs(fill="Correlación",
+         x = element_blank(),
+         y = element_blank())+
+    facet_wrap(~label.x,scales = "free",ncol=6)+
+    # theme_minimal()+
     theme(plot.background = element_rect(color="black"),
-          # rotate x axis labels
-          axis.text.x = element_text(angle = 90, hjust = 1),
-          legend.position = 'top')
-ggsave("entregas/imagenes/5_correlacion_grupos.png",plot = p_5)
+          legend.position="right",
+          axis.text.x = element_text(angle = 90, hjust = 1,size=4.5),
+          axis.text.y = element_text(size=4.5))
+ggsave("entregas/imagenes/6_correlacion.png",plot = p_6,width=20,height=20)
+
 
 #get columns that has more than 50% of missing values without using df_nas
-sin_nulos <- df[,grep("_sd|_code(high|low)|_nr|_ord|_osp|_mean", 
+sin_nulos <- df[,grep(sufijos, 
                  names(df),invert=TRUE),with=F] |>
   lapply(function(x) sum(is.na(x))/length(x))|> unlist()
 
-sin_nulos[sin_nulos>.5] |> 
+sin_nulos[sin_nulos>.75] |> 
   names()
 
 #line plots

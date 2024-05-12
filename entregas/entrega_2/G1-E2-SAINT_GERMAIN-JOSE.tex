@@ -136,6 +136,7 @@ pertenece:
 \begin{itemize}
   \item ca: Espacio cívico y académico
   \item cl: Libertad civil
+  \item cs: Sociedad civil
   \item dd: Democracia directa
   \item de: Demografía
   \item dl: Deliberación
@@ -143,14 +144,17 @@ pertenece:
   \item ex: Ejecutivo
   \item exl: Legitimación
   \item ju: Poder judicial
+  \item leg: Legislatura
   \item lg: Legislatura
   \item me: Medios de comunicación
   \item pe: Igualdad política
   \item ps: Partidos políticos
-  \item sv/st: Soberanía/Estado
+  \item sv: Soberanía
+  \item st: Estado
   \item x: Índice (calculado a partir de variables que también se 
   incluyen en la base de datos)
   \item zz: Cuestionario posterior a la encuesta
+  \item ws: Encuesta de sociedad digital
 \end{itemize}
 
 A la base original obtenida desde la librería de V-Dem, se le realizaron los
@@ -245,11 +249,31 @@ la figura ~\ref{fig:golpes_anios}.
 
 \section{Correlación entre variables}
 
+Puesto que el dataset (previo filtrado de variables que no se utilizarán para
+el entrenamiento) cuenta con alrededor de 1000 columnas, se vuelve imposible
+realizar un mapa de calor que cruce todas las variables entre ellas (en la figura 
+\ref{fig:correlacion_tot} dentro del anexo se muestra una tabla de correlacion de las 
+variables individuales, agrupadas por el grupo de variable al que pertenecen). Por lo 
+tanto, recurriremos al agrupamiento de variables provisto por el codebook para rezliar un
+gráfico de correlación entre los promedios de grupos de variables, como se puede 
+apreciar en la figura ~\ref{fig:correlacion_gp}.
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{5_correlacion_grupos.png}
+  \caption{Correlación entre promedios de grupos de variables\label{fig:correlacion_gp}}
+\end{figure}
 
+%TODO intentar concluir algo de esto
+El primer comentario a la figura surge de la fuerte correlación negativa que el grupo
+'democracia directa' tiene con varios grupos: 'encuesta de sociedad digital', con el 
+grupo de los 'índices', el de 'partidos políticos', el de 'partysystems', el de 
+'soberanía' y con el de 'sociedad civil'. Por otro lado, correlaciona fuertemente 
+pero de manera positiva con los grupos de 'demografía' e 'igualdad política'. Otras
+fuertes correlaciones a mencionar son entre el grupo 'elecciones' y 'espacio cívico y 
+académico', entre el de 'sociedad civil' y el de 'índice', entre 'partidos políticos' e
+'índice'.
 
 \section{Anexo}
-
-
 
 \begin{figure}[H]
   \centering  
@@ -257,11 +281,11 @@ la figura ~\ref{fig:golpes_anios}.
   \caption{Conteo de golpes por año y región\label{fig:golpes_anios}}
 \end{figure}
 
-
-\textit{Cargar el dataset con los datos para cada sujeto y los nombres y 
-coordenadas de las regiones cerebrales a las que se les registró la actividad. 
-Reportar cuántos sujetos y cuántos estados de sueño se observan en el conjunto de
-datos.}
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{6_correlacion.png}
+  \caption{Correlación entre variables por grupo\label{fig:correlacion_tot}}
+\end{figure}
 
 \printbibliography
 
