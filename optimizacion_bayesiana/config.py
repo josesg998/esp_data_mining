@@ -31,7 +31,7 @@ def config(modelo):
     elif modelo=='XGB': #XGBBoost
         from xgboost import XGBClassifier
         diccionario[modelo] = {
-            'model':XGBClassifier(),
+            'model':XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
             'output':'optimizacion_bayesiana/logs/OB_XGB_log.csv',
             'space':{
                 'n_estimators':1000,
