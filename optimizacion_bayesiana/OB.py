@@ -45,7 +45,7 @@ def OB():
 
     X = df.drop('coup', axis=1)
     y = df.set_index('year')['coup']
-    X.fillna(0, inplace=True)
+    # X.fillna(0, inplace=True)
 
 
     def block_time_series_CV(X, y, clf,series_CV=series_CV,model='RF'):
@@ -89,7 +89,7 @@ def OB():
         minutes = (pd.Timestamp.now()-time).seconds/60
         
         params['score'] = mean_score
-        params['time'] = round(minutes,2)
+        params['minutes'] = round(minutes,2)
         
         log.append(params)
         

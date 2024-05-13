@@ -20,3 +20,4 @@ trials/
 *.bcf
 *.xml
 *.blg
+*.ipynb

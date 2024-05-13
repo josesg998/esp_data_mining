@@ -9,9 +9,9 @@ def config(modelo):
         {'train':(1970,2013),'val':(2014,2015)},
         {'train':(1970,2015),'val':(2016,2017)},
         {'train':(1970,2017),'val':(2018,2019)}],
-        # 'input':'data/vdem_coup_ML.pkl'
+        'input':'data/vdem_coup_ML.pkl'
         # para azure
-        'input':'../../../data/vdem_coup_ML.pkl'
+        # 'input':'../../../data/vdem_coup_ML.pkl'
     }
     
     if modelo=='RF': # Random Forest
