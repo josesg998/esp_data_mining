@@ -5,7 +5,6 @@
 
 require("data.table")
 require("vdemdata")
-require("reticulate")
 #create directory called data
 dir.create("data")
 
