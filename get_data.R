@@ -49,4 +49,4 @@ vdem_post_1945[which(paste(vdem_post_1945$country_name, vdem_post_1945$year)
 # write csv file
 # fwrite(vdem_post_1945, "data/vdem_coup_EDA.csv")
 # para azure
-fwrite(vdem_post_1945, "../../../data/vdem_coup_ML.csv")
+fwrite(vdem_post_1945, "data/vdem_coup_EDA.csv")
