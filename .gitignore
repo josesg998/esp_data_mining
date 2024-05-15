@@ -1,6 +1,7 @@
 # ignore data folder
 /data/
-/fuentes/
+# ignore fuentes folder
+/bib/
 # ignore pycache
 __pycache__/
 # ignore logs folder
