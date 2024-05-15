@@ -55,4 +55,4 @@ pandas_df <- r_to_py(df)
 # Save the Python data frame as a pickle file
 pd$to_pickle(pandas_df, "data/vdem_coup_ML.pkl")
 
-# TODO: gestionar nulos
+file.remove('data/vdem_coup_EDA.csv')

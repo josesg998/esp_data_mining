@@ -34,6 +34,8 @@ def OB():
     # se toma archivo pickle, si no existe se crea desde el csv generado en el script de R
     try:
         df = pd.read_pickle(data)
+        # delete data
+        os.remove(data)
     except:
         print('No hay archivo pickle, se cargará el archivo csv y se guardará el pickle para futuras ocasiones')
         data_csv = data.split('.')[0]+'.csv'
