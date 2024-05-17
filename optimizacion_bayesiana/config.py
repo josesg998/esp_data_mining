@@ -18,13 +18,13 @@ def config(modelo):
         from sklearn.ensemble import RandomForestClassifier        
         diccionario[modelo] =  {
             'model':RandomForestClassifier(n_jobs=-1),
-            'output':'optimizacion_bayesiana/logs/OB_random_forest_log.csv',
+            'output':'logs/OB_random_forest_log.csv',
             'space':{
                 'n_estimators':1000,
                 'max_depth':    hp.uniformint('max_depth', 1, 15),
                 'max_features':hp.uniform('max_features', 0.1, 1.0),
                 },
-            'trials':'optimizacion_bayesiana/trials/trials_RF.pkl'
+            'trials':'trials/trials_RF.pkl'
         }
         return diccionario
     
@@ -32,13 +32,13 @@ def config(modelo):
         from xgboost import XGBClassifier
         diccionario[modelo] = {
             'model':XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
-            'output':'optimizacion_bayesiana/logs/OB_XGB_log.csv',
+            'output':'logs/OB_XGB_log.csv',
             'space':{
                 'n_estimators':1000,
                 'reg_lambda': hp.uniform('reg_lambda', 0.1, 10),
                 'learning_rate': hp.uniform('learning_rate', 0.01, 0.3),
                 },
-            'trials':'optimizacion_bayesiana/trials/trials_XGB.pkl'
+            'trials':'trials/trials_XGB.pkl'
         }
         return diccionario
     

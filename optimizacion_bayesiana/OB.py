@@ -7,12 +7,14 @@ import numpy as np
 import os
 import pickle
 
+os.chdir('buckets/b1')
+
 def OB():
     # create folder logs and trials if they don't exist
-    if not os.path.exists('optimizacion_bayesiana/logs'):
-        os.makedirs('optimizacion_bayesiana/logs')
-    if not os.path.exists('optimizacion_bayesiana/trials'):
-        os.makedirs('optimizacion_bayesiana/trials')    
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
+    if not os.path.exists('trials'):
+        os.makedirs('trials')    
     
     #eleccion de modelo
     model = input('Elegir modelo (RF o XGB): ')
@@ -35,7 +37,7 @@ def OB():
     try:
         df = pd.read_pickle(data)
         # delete data
-        os.remove(data)
+        #os.remove(data)
     except:
         print('No hay archivo pickle, se cargará el archivo csv y se guardará el pickle para futuras ocasiones')
         data_csv = data.split('.')[0]+'.csv'
