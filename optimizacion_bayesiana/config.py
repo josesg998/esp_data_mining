@@ -22,7 +22,7 @@ def config(modelo):
             'space':{
                 'n_estimators':1000,
                 'max_depth':    hp.uniformint('max_depth', 1, 15),
-                'max_features':hp.uniformint('max_features',373,3734),
+                'max_features':hp.uniform('max_features',.1,.65),
                 },
             'trials':'trials/trials_RF.pkl'
         }
