@@ -30,8 +30,9 @@ def config(modelo):
     
     elif modelo=='XGB': #XGBBoost
         from xgboost import XGBClassifier
+        from sklearn.metrics import roc_auc_score
         diccionario[modelo] = {
-            'model':XGBClassifier(use_label_encoder=False, eval_metric='roc_auc_score'),
+            'model':XGBClassifier(use_label_encoder=False, eval_metric=roc_auc_score),
             'output':'logs/OB_XGB_AUC_log.csv',
             'space':{
                 'n_estimators':1000,
