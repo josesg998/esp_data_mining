@@ -1,9 +1,7 @@
 # %%
 import pandas as pd
-from sklearn.metrics import roc_auc_score
 from config import config
 import pickle
-import shap
 
 # %%
 #eleccion de modelo
