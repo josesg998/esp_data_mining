@@ -21,7 +21,7 @@ df = pd.read_pickle('data/vdem_coup_ML.pkl')
 # drop non numeric columns for df pandas dataframe
 df = df.select_dtypes(include=['number'])
 
-df.columns[~df.columns.str.startswith('e_')]
+df = df.columns[~df.columns.str.startswith('e_')]
 
 X = df.drop('coup', axis=1)
 y = df.set_index('year')['coup']
