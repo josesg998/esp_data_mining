@@ -137,9 +137,24 @@ p_3 <- df |>
 
 ggsave("entregas/imagenes/3_golpes_decadas.png",p_3,width=9,height=5)
 
-p_4 <- df |> 
-  mutate(coup=ifelse(coup==0,"no","si")) |>
-  ggplot(aes(x=year,fill=coup,y=country_text_id))+
+p_4 <- df[coup!=0] |> 
+  ggplot(aes(x=year,fill=e_regionpol_7C,y=coup))+
+    geom_bar(stat='identity',color='grey',bins=36)+
+    scale_fill_manual(values = c('#e41a1c','#377eb8','#4daf4a','#984ea3',
+                                 '#ff7f00','#ffff33','#a65628'))+
+    labs(x=element_blank(),y='Cantidad de golpes',fill='Región')+
+    # scale x axis to show each 10 years
+    scale_x_continuous(breaks=seq(1950,2025,5))+
+    theme_minimal()+
+    theme(plot.background = element_rect(fill="white",color='black'),
+           axis.text.x = element_text(angle = 90, hjust = 1,size=10),
+           legend.position = 'bottom')
+ggsave("entregas/imagenes/4_golpes_anios.png",plot = p_4,width=10,height=5)
+
+
+
+
+
     geom_tile()+
     scale_fill_viridis_d()+
     facet_col(vars(e_regionpol_7C), scales="free_y",
@@ -209,26 +224,3 @@ p_6 <- cor_mtx |>
           axis.text.x = element_text(angle = 90, hjust = 1,size=4.5),
           axis.text.y = element_text(size=4.5))
 ggsave("entregas/imagenes/6_correlacion.png",plot = p_6,width=20,height=20)
-
-
-#get columns that has more than 50% of missing values without using df_nas
-sin_nulos <- df[,grep(sufijos, 
-                 names(df),invert=TRUE),with=F] |>
-  lapply(function(x) sum(is.na(x))/length(x))|> unlist()
-
-sin_nulos[sin_nulos>.75] |> 
-  names()
-
-#line plots
-lines_countries <- function(df,country,column){
-  
-  df[country_name %in% country,] |> 
-    ggplot(aes(x=year,y={{column}},group=country_name,color=country_name))+
-    geom_line()+
-    labs(title=codebook[codebook$tag==column,"name"],
-         x="Year",
-         y="Polyarchy Index")
-}
-
-
-lines_countries(df,c("USA","Canada","Mexico"),v2x_polyarchy)
