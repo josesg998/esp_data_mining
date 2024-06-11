@@ -22,6 +22,6 @@ trials/
 *.bcf
 *.xml
 *.blg
-*.ipynb
+*.toc
 # ignore corrida_final/modelos
 corrida_final/modelos/
