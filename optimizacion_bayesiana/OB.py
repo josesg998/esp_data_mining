@@ -7,8 +7,6 @@ import numpy as np
 import os
 import pickle
 
-os.chdir('buckets/b1')
-
 def OB():
     # create folder logs and trials if they don't exist
     if not os.path.exists('logs'):
@@ -35,10 +33,11 @@ def OB():
 
     # se toma archivo pickle, si no existe se crea desde el csv generado en el script de R
     df = pd.read_csv(data,parse_dates=True,keep_date_col=True,low_memory=False)
-    df.to_pickle(data)
+    
 
     # drop non numeric columns for df pandas dataframe
     df = df.select_dtypes(include=['number'])
+    df = df[df.columns[~df.columns.str.startswith('e_')]]
 
     X = df.drop('coup', axis=1)
     y = df.set_index('year')['coup']
