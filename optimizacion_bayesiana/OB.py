@@ -34,7 +34,7 @@ def OB():
     log = []
 
     # se toma archivo pickle, si no existe se crea desde el csv generado en el script de R
-    df = pd.read_csv(data,parse_dates=True,keep_date_col=True,low_memory=False)
+    df = pd.read_csv(data)
     
 
     # drop non numeric columns for df pandas dataframe
