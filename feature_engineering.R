@@ -46,13 +46,6 @@ one_hot_encoding <- function(df,col,pref){
 
 df <- one_hot_encoding(df,"e_regionpol_7C","region_")
 
-# Import pandas in R
-pd <- import("pandas")
-
-# Convert the R data frame to a Python data frame
-pandas_df <- r_to_py(df)
-
-# Save the Python data frame as a pickle file
-pd$to_pickle(pandas_df, "data/vdem_coup_ML.pkl")
+fwrite(df, "data/vdem_coup_ML.csv")
 
 file.remove('data/vdem_coup_EDA.csv')

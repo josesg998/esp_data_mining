@@ -18,7 +18,7 @@ output         = config_ML['output']
 # %%
 
 # se toma archivo pickle, si no existe se crea desde el csv generado en el script de R
-df = pd.read_pickle('data/vdem_coup_ML.pkl')
+df = pd.read_csv('data/vdem_coup_ML.csv')
 
 # drop non numeric columns for df pandas dataframe
 df = df.select_dtypes(include=['number'])
