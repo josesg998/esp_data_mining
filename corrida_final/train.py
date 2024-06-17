@@ -25,7 +25,7 @@ df = df.select_dtypes(include=['number'])
 
 df = df.columns[~df.columns.str.startswith('e_')]
 
-X = df.drop('coup', axis=1)
+X = df.drop(columns='coup')
 y = df.set_index('year')['coup']
 
 for year in range(2020,end+1):
