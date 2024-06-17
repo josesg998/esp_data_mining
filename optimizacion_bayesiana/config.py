@@ -9,7 +9,7 @@ def config(modelo):
         {'train':(1970,2013),'val':(2014,2015)},
         {'train':(1970,2015),'val':(2016,2017)},
         {'train':(1970,2017),'val':(2018,2019)}],
-        'input':'data/vdem_coup_ML.pkl'
+        'input':'data/vdem_coup_ML.csv'
         # para azure
         # 'input':'../../../data/vdem_coup_ML.pkl'
     }
@@ -18,13 +18,13 @@ def config(modelo):
         from sklearn.ensemble import RandomForestClassifier        
         diccionario[modelo] =  {
             'model':RandomForestClassifier(n_jobs=-1),
-            'output':'logs/OB_random_forest_log.csv',
+            'output':'logs/OB_random_forest_version_csv_log.csv',
             'space':{
                 'n_estimators':1000,
                 'max_depth':    hp.uniformint('max_depth', 1, 15),
                 'max_features':hp.uniform('max_features',.1,.65),
                 },
-            'trials':'trials/trials_RF.pkl'
+            'trials':'trials/trials_RF_version_csv.pkl'
         }
         return diccionario
     
@@ -32,13 +32,13 @@ def config(modelo):
         from xgboost import XGBClassifier
         diccionario[modelo] = {
             'model':XGBClassifier(use_label_encoder=False),
-            'output':'logs/OB_XGB_V2_log.csv',
+            'output':'logs/OB_XGB_version_csv_log.csv',
             'space':{
                 'n_estimators':1000,
                 'reg_lambda': hp.uniform('reg_lambda', 0.1, 10),
                 'learning_rate': hp.uniform('learning_rate', 0.01, 0.3),
                 },
-            'trials':'trials/trials_XGB_V2.pkl'
+            'trials':'trials/trials_XGB_version_csv.pkl'
         }
         return diccionario
     

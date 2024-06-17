@@ -34,15 +34,8 @@ def OB():
     log = []
 
     # se toma archivo pickle, si no existe se crea desde el csv generado en el script de R
-    try:
-        df = pd.read_pickle(data)
-        # delete data
-        #os.remove(data)
-    except:
-        print('No hay archivo pickle, se cargará el archivo csv y se guardará el pickle para futuras ocasiones')
-        data_csv = data.split('.')[0]+'.csv'
-        df = pd.read_csv(data_csv,parse_dates=True,keep_date_col=True,low_memory=False)
-        df.to_pickle(data)
+    df = pd.read_csv(data,parse_dates=True,keep_date_col=True,low_memory=False)
+    df.to_pickle(data)
 
     # drop non numeric columns for df pandas dataframe
     df = df.select_dtypes(include=['number'])
