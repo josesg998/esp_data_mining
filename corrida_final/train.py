@@ -32,7 +32,8 @@ for year in range(2020,end+1):
     clf            = config_ML['modelo']
     print("Entrenando para el año "+str(year))
     if ~os.path.exists('modelos/'+str(year)):
-        os.create_dir('modelos/'+str(year))
+        #create directoryos 'modelos/'+str(year)
+        os.mkdir('modelos/'+str(year))
 
     X_train = X[X['year']<year]
     y_train = y[y.index<year]
