@@ -20,13 +20,22 @@
 
 \graphicspath{ {../imagenes/} }
 
-\title{Entrega 3: Introducción y Resultados}
-
+\title{Predicción de golpes de estado en el siglo xxi}
 \author{José Saint Germain \texttt{josesg998@gmail.com} }
 
 \begin{document}
-
 \maketitle
+
+\textbf{\Large Especialización en exploración de datos y descubrimiento del conocimiento}
+
+\textbf{\Large Facultad de Ciencias Exactas y Naturales}
+
+\textbf{\Large Universidad de Buenos Aires}
+
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=.5\textwidth]{0_portada.jpg}
+\end{figure}
 
 % add TOC
 \pagebreak
@@ -34,17 +43,15 @@
 \pagebreak
 
 \section{Introducción}
-
-% Explicar la merma de golpes de estado, en especial en LATAM
-
-% Mencionar dos o tres autores que mencionen los motivadores de golpes
-
 El objetivo de este trabajo es lograr entrenar un modelo de aprendizaje automático
-que logre predecir de manera aceptable la presencia de golpes de estado durante los años 
+que logre predecir la presencia de golpes de estado durante los años 
 2020 a 2022 en todos los países del mundo a partir de la utilización de la base de datos 
-provista por la fundación Varieties of Democracy (V-Dem) (\cite{Cop24}), 
-así como tener una noción acabada de las variables más importantes que los algoritmos 
-utilizan para la predicción de la variable objetivo.
+provista por la fundación Varieties of Democracy (V-Dem) (\cite{Cop24}). A su vez, se 
+busca comparar la performance de los algoritmos entrenados con los utilizados por el artículo
+realizado por Cebotari et al (\cite{Ceb24}), el cual utilizó una mayor variedad de fuentes. 
+Adicionalmente, este trabajo busca tener una noción acabada de las variables más importantes 
+que los algoritmos utilizan para la predicción de la variable objetivo, aprovechando que la
+base de datos cuenta mayoritariamente solo con variables ligadas a lo político-institucional.
 
 \subsection{Motivación}
 % Motivación del paper (comparar con el poder predictivo de la base del FMI)
@@ -349,9 +356,17 @@ esta métrica son que es insensible al desbalance de clases y que proporciona un
 única del rendimiento del modelo en distintos umbrales de decisión.
 
 \subsection{Optimización de hiperparámetros}
-Con respecto al ajuste de hiperparámetros se utilizará la optimización bayesiana. La misma 
-consistirá en 100 iteraciones en donde se buscará el valor óptimo de los siguientes 
-hiperparámetros:
+Con respecto al ajuste de hiperparámetros se utilizará la optimización bayesiana. Este
+algoritmo goza de varias ventajas con respecto a sus contrapartes grid search y random
+search. Mientras que estos últimos recorren los hiperparámetros
+sin prestar atención al puntaje que obtiene la métrica a optimizar, la optimización bayesiana
+sí lo hace (en este caso, el área bajo la curva ROC) e intenta mejorar ese
+puntaje en cada iteración. Asi, recorre el espacio de hiperparámetros de manera más eficiente,
+probando combinaciones de hiperparámetros que permitan minimizar o maximizar la métrica.
+Además, por cómo está desarrollado este algoritmo, en los hiperparámetros con decimales, puede
+explorar cualquier tipo de valores entre un rango provisto por el usuario, obteniendo valores
+precisos de los hiperparámetros. Esta optimización bayesiana consistirá en 100 
+iteraciones en donde se buscará el valor óptimo de los siguientes hiperparámetros:
 
 \begin{itemize}
   \item Random Forest: profundidad máxima de los árboles (max\_depth) y la 
@@ -365,14 +380,15 @@ Adicionalmente el parámetro que establece la cantidad de árboles creados
 (n\_estimators) quedará fijado en 1000.
 
 \subsection{Block-time-series cross-validation}
-Para evitar el data leakage, en cada iteración de la optimización bayesiana
+Para evitar el data leakage -es decir, incorporar en el conjunto de entrenamiento
+información que no vamos a tener en futuro- en cada iteración de la optimización bayesiana
 se utilizará la validación cruzada. Sin embargo, como se trabajará con una base
 de datos de panel, conviene utilizar una versión adaptada: el método \textit{block-
 time-series cross-validation}, basado en \cite{Bur94} y \cite{RAc00}. El método 
 aplicado en este caso consiste en generar 5 pares de entrenamiento y validación: 
 {1970 - 2009, 2010 - 2011}; {1970 - 2011, 2012 - 2013}; {1970 - 2013, 2014 - 2015}; 
 {1970 - 2015, 2016 - 2017}; {1970 - 2017, 2018- 2019}. Por lo tanto, cada set de 
-entrenamiento consiste en observaciones desde 1970 hasta un añ de corte (2009, 
+entrenamiento consiste en observaciones desde 1970 hasta un año de corte (2009, 
 2011, 2013, 2015, 2017) y el set de validación contempla los dos años siguientes 
 del mismo. Una vez realizada la optimización bayesiana, se toman los valores de 
 hiperparámetros que lograron maximizar el AUC y se entrena el modelo con el set de 
