@@ -2,15 +2,17 @@
 import pandas as pd
 from config import config
 import pickle
+import os
 
 # %%
 #eleccion de modelo
 model = input('Elegir modelo (RF o XGB): ')
 model = model.upper()
+end = input('Elegir año de fin de corte: ')
+end = int(end)
 
 # se toma información del modelo desde el config file
 config_ML = config(model)
-clf            = config_ML['modelo']
 output         = config_ML['output']
 
 # %%
@@ -26,11 +28,18 @@ df = df.columns[~df.columns.str.startswith('e_')]
 X = df.drop('coup', axis=1)
 y = df.set_index('year')['coup']
 
-X_train = X[X['year']<2020]
-y_train = y[y.index<2020]
+for year in range(2020,end+1):
+    clf            = config_ML['modelo']
+    print("Entrenando para el año "+str(year))
+    if ~os.path.exists('modelos/'+str(year)):
+        os.create_dir('modelos/'+str(year))
 
-# %%
-clf.fit(X_train, y_train)
-with open(output, 'wb') as f:
-    pickle.dump(clf, f)
-print('Entrenamiento finalizado')
+    X_train = X[X['year']<year]
+    y_train = y[y.index<year]
+
+    # %%
+    clf.fit(X_train, y_train)
+    with open('modelos/'+str(year)+'/'+output, 'wb') as f:
+        pickle.dump(clf, f)
+    print('Entrenamiento finalizado para el año '+str(year))
+print("Todos los entrenamientos finalizados")

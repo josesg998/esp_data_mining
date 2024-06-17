@@ -8,7 +8,7 @@ def config(modelo):
                                      max_depth=8,
                                      max_features=0.535263,
                                      random_state=42)
-        diccionario['output'] = 'modelos/random_forest.pkl'
+        diccionario['output'] = 'random_forest.pkl'
         
         return diccionario
     
@@ -19,7 +19,7 @@ def config(modelo):
                             reg_lambda=8.15518853563885,
                             use_label_encoder=False,
                             random_state=42)
-        diccionario['output'] = 'modelos/xgboost.pkl'
+        diccionario['output'] = 'xgboost.pkl'
         
         return diccionario
     
