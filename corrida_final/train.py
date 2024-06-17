@@ -31,8 +31,7 @@ y = df.set_index('year')['coup']
 for year in range(2020,end+1):
     clf            = config_ML['modelo']
     print("Entrenando para el año "+str(year))
-    if ~os.path.exists('modelos/'+str(year)):
-        #create directoryos 'modelos/'+str(year)
+    if not os.path.exists('modelos/'+str(year)):
         os.mkdir('modelos/'+str(year))
 
     X_train = X[X['year']<year]
