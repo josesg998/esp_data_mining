@@ -5,8 +5,8 @@ def config(modelo):
         from sklearn.ensemble import RandomForestClassifier      
         diccionario['modelo'] = RandomForestClassifier(n_jobs=-1,
                                      n_estimators=1000,
-                                     max_depth=8,
-                                     max_features=0.535263,
+                                     max_depth=4,
+                                     max_features=0.6378751994880164,
                                      random_state=42)
         diccionario['output'] = 'random_forest.pkl'
         
