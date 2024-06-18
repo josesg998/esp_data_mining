@@ -15,8 +15,8 @@ def config(modelo):
     elif modelo=='XGB': #XGBBoost
         from xgboost import XGBClassifier
         diccionario['modelo'] = XGBClassifier(n_estimators=1000,
-                            learning_rate=0.1898345093262259,
-                            reg_lambda=8.15518853563885,
+                            learning_rate=0.238914349636628,
+                            reg_lambda=0.4425001945646789,
                             use_label_encoder=False,
                             random_state=42)
         diccionario['output'] = 'xgboost.pkl'
