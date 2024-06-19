@@ -23,6 +23,8 @@ df = pd.read_csv('data/vdem_coup_ML.csv')
 # drop non numeric columns for df pandas dataframe
 df = df.select_dtypes(include=['number'])
 
+df = df[df['year']>=1970]
+
 df = df[df.columns[~df.columns.str.startswith('e_')]]
 
 X = df.drop('coup', axis=1)
