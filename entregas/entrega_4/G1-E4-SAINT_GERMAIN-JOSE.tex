@@ -540,7 +540,13 @@ un país sufrió más de un golpe de estado en un año, el mismo será contabili
 sola vez. Adicionalmente, en este trabajo también se consideran los golpes de estado
 que no fueron exitosos, es decir, que no lograron derrocar al gobierno en cuestión. 
 De allí se desprende que países como Argentina, que en total ha tenido seis golpes de 
-estado exitosos, figure con el doble de golpes en la figura \ref{fig::mapa_golpes}.
+estado exitosos, aparezca con el doble de golpes en la figura \ref{fig::mapa_golpes}.
+Esta variable fue obtenida (al igual que en el artículo del FMI) de la base de datos
+realizada por Powell y Thyne (\citeyear{Pow11}). En el artículo que respalda esta base, 
+definen a un intento de golpe de Estado como \textit{intentos ilegales y manifiestos por parte 
+de las fuerzas armadas u de otras elites dentro del aparato estatal de derrocar al 
+gobierno en ejercicio} (\cite[p.~252]{Pow11}).
+
 
 Para realizar un paneo general de la variable objetivo, es decir, la presencia de
 golpes de estado a lo largo de los años, generamos un conteo y lo visualizamos en un 
@@ -580,14 +586,13 @@ la figura \ref{fig:golpes_anios}.
 En primer lugar, se realizó la optimización bayesiana de ambos modelos según lo indicado
 en la metodología. En el caso de XGBoost se pudo realizar las 100 iteraciones sin mayores
 inconvenientes, tomando los valores óptimos de hiperparámetros para el entrenamiento 
-final. Con respecto a Random Forest, en cambio, se alcanzaron 53 iteraciones, debido a que cada
+final. Con respecto a Random Forest, en cambio, se alcanzaron 44 iteraciones, debido a que cada
 iteración consumía una gran cantidad de tiempo (en promedio una hora) y no se observaban
-mejoras significativas en el AUC. De las iteraciones generadas, se tomó los 
-hiperparámetros del segundo mejor AUC, puesto que la diferencia con el ganador en el score 
-era insignificante, pero el tiempo de cómputo era menos de la mitad.
+mejoras significativas en el AUC. De las iteraciones generadas, se tomaron los hiperparámetros
+que daban mejor resultado y tardaban menos minutos en entrenar el modelo.
 
 Una vez seleccionado los mejores hiperparámetros, se procede a entrenar los modelos en el
-conjunto de entrenamiento final, el cual abarca los registros desde 1950 hasta 2019; así
+conjunto de entrenamiento final, el cual abarca los registros desde 1970 hasta 2019; así
 como a evaluar el desempeño del mismo en los años 2020, 2021 y 2022 para emular el trabajo
 realizado por el FMI.
 
@@ -613,11 +618,9 @@ observamos el AUC acumulada es decir, evaluando en ese año junto con los anteri
       Año  & AUC      & AUC      & AUC      & AUC  \\
            &          & acumulada&          & acumulada \\
       \midrule
-      2020 & 1.000000 & 1.000000 & 1.000000 & 1.000000 \\
-      2021 & 0.750000 & 0.785714 & 0.830443 & 0.855718 \\
-      2022 & 0.666667 & 0.750000 & 0.666667 & 0.799051 \\
-      2023 & 0.666667 & 0.730058 & 0.833333 & 0.806981 \\
-
+      2020 & 1.000 & 1.000 & 1.000 & 1.000 \\
+      2021 & 0.750 & 0.786 & 0.747 & 0.784 \\
+      2022 & 0.667 & 0.750 & 0.667 & 0.749 \\
       \bottomrule
     \end{tabular}
   \caption{Área bajo la curva ROC por año puntual y acumulado (XGBoost y 
@@ -626,99 +629,144 @@ observamos el AUC acumulada es decir, evaluando en ese año junto con los anteri
 
 Lo primero que podemos observar es que ambos modelos logran una performance perfecta 
 para el año 2020, lo cual resulta esperable ya que cuentan con información del año 
-inmediatamente anterior. También esperable, la performance decae en los años siguientes, 
-lo cual impacta en el valor del AUC acumulada. Lo más destacable es que Random 
-Forest logra una mejor performance que XGBoost en el resto de años, alcanzando un AUC de 
-casi 0.8 y 0.75, respectivamente. Con esta información, se tomó la decisión de continuar 
-el análisis de resultados con Random Forest.
+inmediatamente anterior y a que sólo deben predecir un golpe de estado (en Mali).
+También esperable, la performance decae en los años siguientes, 
+lo cual impacta en el valor del AUC acumulada. Comparando ambos modelos, observamos
+que XGBoost fue ligeramente superior en el año 2021 con respecto a Random Forest.
+Como no son diferencias significativas, vamos a analizar ambos modelos para observar
+si utilizan diferentes variables para sus predicciones.
 
-Focalizando solamente en Random Forest, y puesto que los casos negativos (527 en los 
-tres años de evaluación) fueron predichos de manera perfecta, podemos aprovechar para 
-visualizar los casos positivos que son apenas diez casos, tantos los verdaderos 
-positivos como los falsos negativos (Cuadro \ref{tab:resultados}). En primer lugar,
-podemos notar que la predicción perfecta en el año 2020 se debe a que el modelo logró
-predecir correctamente el único golpe de ese año en Malí, en la región del Sahel. Después, 
-en el año 2021 esta performance disminuye, al no lograr predecir los golpes de nuevo en 
-Mali y en Níger, aunque si predice golpes en Sudán, Guinea y Chad. A simple vista, no parece 
-haber datos geográficos o históricos que permitan establecer por qué logra predecir algunos 
-golpes y en otros no,
-en especial porque son países relativamente similares, de pocos años de independencia y
-dentro de la misma región. Adicionalmente, en este año también logró predecir el golpe de
-estado en Burma/Myanmar, una nación ubicada en una región alejada de África, en el sudeste
-asiático.
+Puesto que los casos positivos son apenas diez, aprovecharemos para visualizar la performance
+de los modelos en cada uno de los casos. Adicionalmente, incorporamos el único falso positivo
+predicho por Random Forest (Afganistan en el año 2021). La lista figura en la 
+tabla (Cuadro \ref{tab:resultados}).
 
 \begin{table}[H]
   \centering
-    \begin{tabular}{rllll}
+    \begin{tabular}{lrlll}
       \toprule
-      Año & País & ¿Hubo golpe? & Predicción & Resultado \\
+      país & año & ¿Hubo golpe? & Random Forest & XGBoost \\
       \midrule
-      2020 & Mali                  & Sí & Sí & Verdadero positivo \\
-      2021 & Burma/Myanmar         & Sí & Sí & Verdadero positivo \\
-      2021 & Sudan                 & Sí & Sí & Verdadero positivo \\
-      2021 & Guinea                & Sí & Sí & Verdadero positivo \\
-      2021 & Chad                  & Sí & Sí & Verdadero positivo \\
-      2022 & Burkina Faso          & Sí & Sí & Verdadero positivo \\
-      2021 & Mali                  & Sí & No & Falso negativo \\
-      2021 & Niger                 & Sí & No & Falso negativo \\
-      2022 & Guinea-Bissau         & Sí & No & Falso negativo \\
-      2022 & Sao Tome and Principe & Sí & No & Falso negativo \\
+      Malí & 2020 & Sí & Verdadero positivo & Verdadero positivo \\
+      Birmania/Myanmar & 2021 & Sí & Verdadero positivo & Verdadero positivo \\
+      Malí & 2021 & Sí & Falso negativo & Falso negativo \\
+      Sudán & 2021 & Sí & Verdadero positivo & Verdadero positivo \\
+      Afganistán & 2021 & No & Falso positivo & Verdadero negativo \\
+      Níger & 2021 & Sí & Falso negativo & Falso negativo \\
+      Guinea & 2021 & Sí & Verdadero positivo & Verdadero positivo \\
+      Chad & 2021 & Sí & Falso negativo & Falso negativo \\
+      Burkina Faso & 2022 & Sí & Verdadero positivo & Verdadero positivo \\
+      Guinea-Bisáu & 2022 & Sí & Falso negativo & Falso negativo \\
+      Santo Tomé y Príncipe & 2022 & Sí & Falso negativo & Falso negativo \\
       \bottomrule
     \end{tabular}
   \caption{Falsos negativos y verdaderos positivos (Random Forest) \label{tab:resultados}}
 \end{table}
 
-Finalmente, el año 2022 expone la peor performance del modelo: si bien logra predecir
-un golpe de estado en Burkina Faso, falla al predecir golpes en Guinea-Bissau y Sao Tome
-y Principe, todos países en la misma región del continente africano. De manera general, 
-podemos asociar esta baja en la performance a que el modelo deja de contar con
-información del año inmediatamente anterior al del conjunto de evaluación.
+Ambos modelos predicen correctamente el único golpe del año 2020 en Mali. A su
+vez, fallan en predecir los golpes de Mali, Níger y Chad de 2021; así como fallan en predecir
+casi todos los golpes del 2022, a excepción del de Burkina Faso. La única discrepancia entre
+los algoritmos surgió con respecto a Afganistán en el año 2021: fue el único caso de falso
+positivo predicho por Random Forest, mientras que XGBoost logró categorizarlo como negativo.
+
+Profundizando en el análisis de la performance, vamos a observar la probabilidad asignada
+a cada caso por el algoritmo. Mirando la probabilidad de Random Forest 
+(figura \ref{fig:prob_rf}), llama la atención como el caso de Afganistán en 2021 figura
+tan arriba en la lista, superando incluso a cuatro casos positivos ¿Por qué sucedió esto?
+Resulta útil remitirnos nuevamente a la definición de golpes de Estado de Powell y Thyne:
+\textit{intentos ilegales y manifiestos por parte de las fuerzas armadas u de otras elites dentro
+del aparato estatal de derrocar al gobierno en ejercicio} (\cite[p.~252]{Pow11}). En el caso de 
+Afganistán, la toma del poder no fue perpetrada por sectores internos del Estado afgano, sino
+por un ejército externos (en este caso, el movimiento Talibán).
+
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{5_prob_rf.png}
+  \caption{Predicción probabilística años 2020-2022 (Random Forest) \label{fig:prob_rf}}
+\end{figure}
+
+En cambio, Xgboost separa  más consistentemente los casos positivos de los negativos
+en su asignación de probabilidades (figura \ref{fig:prob_xgb}). Incluso posiciona en sexto lugar
+a Chad en 2021, si bien no lo predice como positivo. De todas formas, en ambos casos 
+Sao Tome y Príncipe en 2022 así como Guinea-Bissau en 2022 figuran bastante abajo en el ranking
+lo cual hace esperable que fallen en lograr predecir sus respectivos golpes de Estado. Por 
+último, existe un único caso positivo que ni siquiera alcanzó las primeras 25 posiciones: nos
+referimos a Níger en 2021. Random Forest le asignó una probabilidad del 4,46 por ciento, 
+posicionándolo en el puesto 36. Aún más interesante, XGBoost le asignó apenas una probabilidad
+de 0,033 por ciento (puesto 44). Profundizando en este caso, descubrimos que lo que sucedió tanto en 
+Níger como en Guinea-Bisáu y en Santo Tomé y Príncipe fueron intentos fallidos de golpe de Estado.
+Esto nos puede dar una pista de qué tan efectivos son estos modelos para predecir golpes de Estado 
+que no llegan a concretarse.
+
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{6_prob_xgb.png}
+  \caption{Predicción probabilística años 2020-2022 (XGBoost) \label{fig:prob_xgb}}
+\end{figure}
+
+Con el objetivo de profundizar los motivos para predecir correcta o incorrectamente los casos
+expuestos, así como para enriquecer el análisis sobre los factores explicativos del fenómeno 
+estudiado, realizaremos un análisis de las variables más relevantes para la predicción de golpes
+de acuerdo a los dos algoritmos. Utilizaremos la importancia de las variables, incluido dentro
+de los modelos entrenados, así como enfoques externos con los valores Shapley.
 
 \subsection{Análisis de variables}
 A continuación, pasaremos a evaluar la relevancia de las distintas variables del dataset
 para la predicción del modelo. De esa manera, podremos extraer elementos para determinar
 o reforzar los posibles causales de un golpe de estado en un territorio determinado. En 
 primer lugar, utilizaremos la importancia de las variables según Random Forest, la cual
-se puede observar en la figura \ref{fig:feat_imp} (los nombres de las variables fueron
+se puede observar en la figura \ref{fig:feat_imp_rf}\footnote{Los nombres de las variables fueron
 traducidas y resumidas del libro de códigos de la base de datos para una vista amigable.
-Se puede verificar el nombre codificado y original de las variables en la tabla \ref{tab:vars}). 
+Se puede verificar el nombre codificado y original de las variables en la tabla \ref{tab:vars}}.
 
-Las barras indican el porcentaje de
-importancia de las 10 variables con mayor peso. En total, estas diez variables representan
-alrededor del 50\% de la importancia. En general, todas las variables están relacionadas 
-con la forma de gobierno, con la influencia de las fuerzas armadas en el mismo o con la 
-misma variable objetivo en años anteriores.
-Entre el segundo y el cuarto lugar figuran variables
-que reflejan muy evidentemente una relación con la presencia de golpes de estado, como 
-tener la legislatura cerrada o abortada o que el ejecutivo no sea más electo. El dato más
-interesante a destacar es que la variable con mayor importancia es la cantidad de días desde que
-comenzó el régimen.
+En el caso de Random Forest la importancia de las variables indica cuánto disminuye la impureza
+de los nodos (en este caso, medida con el índice de Gini, establecido por default en el modelo de 
+Scikit-Learn) al utilizar una variable para dividir los datos de un árbol de decisión, de los cuales
+se obtiene un promedio para todo el ensamble de árboles.
+
+Las barras indican el porcentaje de importancia de las 10 variables con mayor peso. En total, estas 
+diez variables representan alrededor del 75 por ciento de la importancia. En general, todas las 
+variables están relacionadas con la forma de gobierno, con la influencia de las fuerzas armadas en el 
+mismo o con la misma variable objetivo en años anteriores. Entre el primer y el cuarto lugar figuran 
+variables que reflejan muy evidentemente una relación con la presencia de golpes de estado, como 
+tener la legislatura cerrada o abortada o que el ejecutivo no sea más electo.
 
 \begin{figure}[H]
   \centering  
-  \includegraphics[width=1\textwidth]{8_feature_importance.png}
-  \caption{Importancia de las variables para predicción 2020-2022 (Random Forest) \label{fig:feat_imp}}
+  \includegraphics[width=1\textwidth]{7_feature_importance_rf.png}
+  \caption{Importancia de las variables para predicción 2020-2022 (Random Forest) \label{fig:feat_imp_rf}}
 \end{figure}
 
-Ahora incorporaremos los Shapley Values para identificar variables importantes a la hora
-de predecir la presencia de golpes de Estado, como se expone en la figura \ref{fig:shapley}.
-En el eje Y figuran las primeras 11 variables con mayor valor de Shapley y en el eje X figura
-el valor Shapley, visualizando la distribución de los casos en forma de violín y los outliers 
-como puntos. Finalmente, el color de los violines y de los puntos indica el valor de la 
-variable en cuestión.
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width=1\textwidth]{8_feature_importance_xgb.png}
+  \caption{Importancia de las variables para predicción 2020-2022 (XGBoost) \label{fig:feat_imp_xgb}}
+\end{figure}
+
+Ahora observaremos una variable similar para XGBoost en la figura \ref{fig:feat_imp_xgb}, si bien la 
+importancia de la variable para este algoritmo quiere decir la cantidad de veces que cada variable 
+aparece en cualquier nodo de decisión en los árboles del modelo, normalizado por la cantidad de veces
+que se realizaron divisiones en todos los árboles. Si bien se encuentran similitudes con Random Forest,
+XGBoost destaca otras variables que llaman la atención, como la libertad de grupos sociales, las 
+decisiones de la Corte Suprema que puedan ser adversas al gobierno, la duración del mandato del jefe de 
+Estado y los métodos de lucha de los grupos antisistema presentes en el país.
+
+Una desventaja de esta métrica es que no permite evaluar el uso de estos atributos comparado con el valor
+de los mismos. Es por eso que incorporamos un análisis utilizando valores Shapley Values. En el eje Y 
+figuran las primeras 11 variables con mayor valor de Shapley y en el eje X figura el valor Shapley, 
+visualizando la distribución de los casos en forma de violín y los outliers como puntos. Finalmente, 
+el color de los violines y de los puntos indica el valor de la variable en cuestión.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{7_shapley_values.png}
-  \caption{Shapley values para predicción 2020-2022 (Random Forest)\label{fig:shapley}}
+  \includegraphics[width=1\textwidth]{9_shapley_values_rf.png}
+  \caption{Shapley values para predicción 2020-2022 (Random Forest)\label{fig:shapley_rf}}
 \end{figure}
 
-Si bien en este gráfico algunas variables figuran también en el gráfico de la importancia
-de las variables, podemos destacar algunas diferencias. Primero, figura la enseñanza de 
-valores políticos en la escuela, en cuyo valores nulos tienen alto valor Shapley. También 
-destacan los datos nulos en el poder relativo entre miembros electos y no electos a nivel 
-regional, en su misma versión hace 10 años (lag 10) y en la presencia de violencia durante 
-el período electoral.
+Si bien en la figura \ref{fig:shapley_rf} algunas variables figuran también en el gráfico de la 
+importancia de las variables, podemos destacar algunas diferencias. Primero, figura la enseñanza de 
+valores políticos en la escuela, en cuyo valores nulos tienen alto valor Shapley. Lo mismo sucede
+con la violencia durante un período electoral. % chequear valores nulos en otro gráfico
 
 Adicionalmente, si bien la cantidad de días del régimen también figura en el gráfico de la 
 importancias de las variables, esta visualización permite observar también cómo influye el valor
@@ -733,8 +781,18 @@ oficiales electos y no electos significa que todos o casi todos de los funcionar
 electos son subordinados de algún otro poder que no surgió de las urnas (a nivel
 regional).
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{10_shapley_values_xgb.png}
+  \caption{Shapley values para predicción 2020-2022 (XGBoost)\label{fig:shapley_xgb}}
+\end{figure}
+
+
+
 Otros temas a tratar en los resultados en la próxima entrega:
+
 - Valores Shapley en cada año individual y/o en cada país
+
 - Análisis histórico de las variables destacadas
 
 \subsection{Discusiones}
@@ -775,21 +833,32 @@ social.
     \toprule
     Variable                  & Descripción \\
     \midrule
-    coup\_lag\_1              & ¿golpes de estado en el último año? \\
-    v2expathhs                & ¿Cómo llega el jefe de estado al gob? \\
-    v2regdur                  & Días desde comienzo del régimen \\
-    v2regoppgroupsact\_5      & FFA se movilizan contra el régimen? \\
-    v2elrgpwr\_lag\_5         & Poder relativo entre miembros electos y no electos a nivel regional (lag 5) \\
-    v2edpoledprim\_lag\_5     & ¿Se enseña en la primaria contenidos con valores políticos? (lag 5) \\
-    v2elpeace                 & Violencia durante período electoral \\
-    v2x\_ex\_military         & Influencia de las FFAA sobre  el Poder Ejecutivo \\
-    v2x\_ex\_military\_lag\_1 & Influencia de las FFAA sobre el Poder Ejecutivo (lag 1) \\
-    v2elrgpwr\_lag\_10        & Poder relativo entre miembros electos y no electos a nivel regional (lag 10) \\
-    v2x\_hosinter             & ¿El ejecutivo no es más electo? \\
-    v2regendtypems\_0\_lag\_1 & ¿El régimen terminó por un golpe de estado? (lag 1) \\
-    v2xlg\_leginter           & ¿Legislatura cerrada o abortada? \\
-    v2regendtype\_lag\_1      & Proceso más importante para terminar con un régimen (lag 1) \\
-    coup\_lag\_1              & ¿Golpes de estado en el último año? \\
+    v2regdur                   & Días desde comienzo del régimen \\
+    v2regendtypems\_0\_lag\_1  & ¿El régimen terminó por un golpe de estado? (lag 1)* \\
+    v2x\_hosinter              & ¿El ejecutivo no es más electo? \\
+    v2xlg\_leginter            & ¿Legislatura cerrada o abortada? \\
+    v2regendtype\_lag\_1       & Proceso más importante para terminar con un régimen (lag 1) \\
+    v2x\_ex\_military          & Influencia de las FFAA sobre el Poder Ejecutivo \\
+    v2regoppgroupsact\_5       & FFA se movilizan contra el régimen? \\
+    coup\_lag\_1               & ¿golpes de estado en el último año? \\
+    v2x\_ex\_military\_lag\_1  & Influencia de las FFAA sobre el Poder Ejecutivo (lag 1) \\
+    v2expathhs                 & ¿Cómo llega el jefe de estado al gob? \\
+    v2regendtype\_lag\_5       & ¿Qué proceso fue el más importante en el fin del régimen? (lag 5)* \\
+    v2clpolcl\_lag\_1          & Libertad para todos los grupos sociales \\
+    v2csanmvch\_2\_lag\_10     & Grupos antisistema que mezclan métodos legales e ilegales (lag 10) \\
+    v2juhcind                  & Decisiones importantes de la Corte Suprema alineadas con el gobierno \\
+    v2exfxtmhs\_lag\_1         & Duración máxima del mandato del jefe de Estado (lag 1) \\
+    v2edpoledprim\_lag\_5      & ¿Se enseña en la primaria contenidos con valores políticos? (lag 5) \\
+    v2elpeace                  & Violencia durante período electoral \\
+    v2pesecsch                 & Porcentaje de población en escuela secundaria \\
+    v2lgqugent                 & Cuota femenina en la cámara baja (o cámara única) \\
+    v2ellostlg                 & Bancas obtenidas por el partido ás grande en la última elección \\
+    v2casoe\_1                 & Emergencia nacional: no declarada pero medidas preparatorias tomadas \\
+    v2casoe\_4                 & Declaración de estado de emergencia nacional por conflicto armado \\
+    v2casoe\_6                 & Declaración de estado de emergencia nacional por otros motivos \\
+    v2exagehos\_lag\_5         & Año de nacimiento del jefe de estado (lag 5) \\
+    v2elvotbuy\_lag\_1         & ¿Hubo evidencia de compra de votos en la última elección? (lag 1) \\
+    v2asuffrage                & Porcentaje de adultos con derecho a votar mayores que la edad mínima \\
     \bottomrule 
     \end{tabular}
   \caption{Nombre original de variables y su descripción \label{tab:vars}}

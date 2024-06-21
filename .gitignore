@@ -8,6 +8,7 @@ __pycache__/
 logs/
 # ignore trials folder
 trials/
+.vscode/
 # ignore project files
 .Rproj.user
 *.RData
