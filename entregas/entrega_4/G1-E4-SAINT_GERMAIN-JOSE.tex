@@ -57,7 +57,7 @@ base de datos cuenta mayoritariamente solo con variables ligadas a lo político-
 % Motivación del paper (comparar con el poder predictivo de la base del FMI)
 La motivación de este trabajo es dialogar con el artículo recientemente realizado por el 
 Fondo Monetario Internacional (FMI) \cite{Ceb24}. En el mismo se aborda el mismo objeto 
-de estudio utilizando diversas metodologías, siendo una de ellas la utilización de 
+de estudio utilizando diversas metodologías, siendo una dellas la utilización de 
 algoritmos de aprendizaje automático. En este trabajo se replicó la metodología utilizada 
 en esa sección; comparando los mismos modelos, sus respectivos hiperparámetros y la 
 métrica a maximizar durante su entrenamiento
@@ -186,7 +186,7 @@ se opongan a los de éstos, sino que, por el contrario, pasan a ser un sector co
 de aquél. En cambio, en los países con predominio de economía de enclave, en donde los 
 sectores exportadores tuvieron primacía total sobre los sectores internos, no se generaron 
 sectores medios. Allí, la relación de subordinación política de los grupos dominantes y, a 
-partir de ellos, de las empresas extranjeras se da de manera más directa sobre los obreros y 
+partir dellos, de las empresas extranjeras se da de manera más directa sobre los obreros y 
 campesinos. En este tipo de países, se logró una preocupación sobre políticas centradas en 
 el mercado interno cuando ya existía una clase media previa a la inserción en el mercado 
 mundial (como en Chile) o cuando los sectores medios lograron insertarse de manera 
@@ -717,7 +717,7 @@ o reforzar los posibles causales de un golpe de estado en un territorio determin
 primer lugar, utilizaremos la importancia de las variables según Random Forest, la cual
 se puede observar en la figura \ref{fig:feat_imp_rf}\footnote{Los nombres de las variables fueron
 traducidas y resumidas del libro de códigos de la base de datos para una vista amigable.
-Se puede verificar el nombre codificado y original de las variables en la tabla \ref{tab:vars}}.
+Se puede verificar el nombre codificado y original de las variables en el cuadro \ref{tab:vars}}.
 
 En el caso de Random Forest la importancia de las variables indica cuánto disminuye la impureza
 de los nodos (en este caso, medida con el índice de Gini, establecido por default en el modelo de 
@@ -744,8 +744,8 @@ tener la legislatura cerrada o abortada o que el ejecutivo no sea más electo.
 \end{figure}
 
 Ahora observaremos una variable similar para XGBoost en la figura \ref{fig:feat_imp_xgb}, si bien la 
-importancia de la variable para este algoritmo quiere decir la cantidad de veces que cada variable 
-aparece en cualquier nodo de decisión en los árboles del modelo, normalizado por la cantidad de veces
+importancia de la variable para este algoritmo significa cuántas veces aparece cada variable
+en cualquier nodo de decisión de los árboles del modelo, normalizado por la cantidad de veces
 que se realizaron divisiones en todos los árboles. Si bien se encuentran similitudes con Random Forest,
 XGBoost destaca otras variables que llaman la atención, como la libertad de grupos sociales, las 
 decisiones de la Corte Suprema que puedan ser adversas al gobierno, la duración del mandato del jefe de 
@@ -775,11 +775,144 @@ de la variable en sus valores Shapley. Allí se observa que los casos con menor 
 predicción de un caso positivo. Se puede inferir de esto último que un régimen joven es más 
 inestable y, por lo tanto, propensa a sufrir un nuevo cambio de régimen mediante un golpe.
 
-Para comprender qué significan estos datos nulos, es de utilidad recurrir al libro de 
-códigos de la base de datos. Por ejemplo, un valor faltante en el poder relativo entre 
-oficiales electos y no electos significa que todos o casi todos de los funcionarios 
-electos son subordinados de algún otro poder que no surgió de las urnas (a nivel
-regional).
+% Para comprender qué significan estos datos nulos, es de utilidad recurrir al libro de 
+% códigos de la base de datos. Por ejemplo, un valor faltante en el poder relativo entre 
+% oficiales electos y no electos significa que todos o casi todos de los funcionarios 
+% electos son subordinados de algún otro poder que no surgió de las urnas (a nivel
+% regional).
+
+Para profundizar el análisis vamos a observar los casos positivos y falsos negativos para
+saber qué valores obtuvieron en las variables más destacadas de la figura \ref{fig:shapley_rf}.
+
+\begin{table}[H]
+  \centering
+
+  \begin{tabular}{lrrrlll}
+    \toprule
+    país & año & v2regdur & shap & golpe & random forest & exitoso \\
+    \midrule
+    Sudán & 2021 & 0 & 0.346 & Sí & Verdadero positivo & Sí \\
+    Birmania/Myanmar & 2021 & 0 & 0.332 & Sí & Verdadero positivo & Sí \\
+    Guinea & 2021 & 0 & 0.230 & Sí & Verdadero positivo & Sí \\
+    Burkina Faso & 2022 & 0 & 0.227 & Sí & Verdadero positivo & Sí \\
+    Malí & 2020 & 0 & 0.226 & Sí & Verdadero positivo & Sí \\
+    Afganistán & 2021 & 0 & 0.173 & No & Falso positivo & - \\
+    Chad & 2021 & 0 & 0.090 & Sí & Falso negativo & No \\
+    Santo Tomé y Príncipe & 2022 & 11230 & -0.006 & Sí & Falso negativo & No \\
+    Níger & 2021 & 3556 & -0.007 & Sí & Falso negativo & No \\
+    Guinea-Bisáu & 2022 & 2749 & -0.007 & Sí & Falso negativo & No \\
+    Malí & 2021 & 136 & -0.008 & Sí & Falso negativo & Sí \\
+    \bottomrule
+    \end{tabular} 
+  \caption{Días desde comienzo régimen vs valores SHAP (Random Forest) \label{tab:shap_rf_regdur}}
+\end{table}
+
+En el cuadro \ref{tab:shap_rf_regdur} observamos el valor de los días desde comienzo del régimen
+(con el nombre original de la base de datos para ahorrar espacio), el valor Shapley asociado de la 
+misma variable, la predicción que hizo Random Forest y, adicionalmente mediante una búsqueda en 
+internet, si esos golpes de Estado fueron exitosos o no\footnote{Powell y Thyne (\citeyear{Pow11}) 
+cuentan con una base que distingue entre golpes exitosos y fallidos, pero llega hasta el año 2010.}. 
+Además el cuadro está ordenada de manera descendente a partir de los valores Shapley. Lo primero que 
+podemos notar es que, a excepción de Chad en 2021, el hecho de tener cero días de duración de un 
+régimen influye en un valor Shapley muy alto, ubicándose entre los más altos de toda la serie si se 
+observa la escala de la figura \ref{fig:shapley_rf}. Eso parece influir en el hecho de que Afganistán 
+sea predicho falsamente como positivo; así como que la mayoría de los golpes de Estado fallidos estén 
+al final de la lista con una falsa predicción como negativo.
+
+Ahora observaremos la variable que registra si el ejecutivo no es más electo:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrrrlll}
+    \toprule
+    país & año & v2x\_hosinter & shap & golpe & random forest & exitoso \\
+    \midrule
+    Chad & 2021 & 1 & 0.321 & Sí & Falso negativo & No \\
+    Guinea & 2021 & 1 & 0.279 & Sí & Verdadero positivo & Sí \\
+    Burkina Faso & 2022 & 1 & 0.278 & Sí & Verdadero positivo & Sí \\
+    Malí & 2020 & 1 & 0.276 & Sí & Verdadero positivo & Sí \\
+    Afganistán & 2021 & 1 & 0.252 & No & Falso positivo & - \\
+    Birmania/Myanmar & 2021 & 0 & -0.002 & Sí & Verdadero positivo & Sí \\
+    Sudán & 2021 & 0 & -0.002 & Sí & Verdadero positivo & Sí \\
+    Santo Tomé y Príncipe & 2022 & 0 & -0.003 & Sí & Falso negativo & No \\
+    Malí & 2021 & 0 & -0.003 & Sí & Falso negativo & Sí \\
+    Níger & 2021 & 0 & -0.003 & Sí & Falso negativo & No \\
+    Guinea-Bisáu & 2022 & 0 & -0.003 & Sí & Falso negativo & No \\
+    \bottomrule
+    \end{tabular}
+\caption{¿El ejecutivo no es más electo? vs valores SHAP (Random Forest) \label{tab:shap_rf_hosinter}}
+\end{table}
+
+En este caso (tabla \ref{tab:shap_rf_hosinter}) la relación entre la predicción y el valor de la 
+variable y el Shapley no es tan directa, puesto que Chad en 2021 cuenta con el valor Shapley más 
+alto de la lista pero es predicho como negativo. Para el resto, se repite el patrón de predecir 
+como negativo a valores bajos del valor Shapley y como positivo a valores altos.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrrrlll}
+    \toprule
+    país & año & v2regendtype\_lag\_1 & shap & golpe & random forest & exitoso \\
+    \midrule
+    Birmania/Myanmar & 2021 & 0 & 0.163 & Sí & Verdadero positivo & Sí \\
+    Sudán & 2021 & 0 & 0.134 & Sí & Verdadero positivo & Sí \\
+    Guinea & 2021 & 0 & 0.113 & Sí & Verdadero positivo & Sí \\
+    Malí & 2020 & 0 & 0.104 & Sí & Verdadero positivo & Sí \\
+    Burkina Faso & 2022 & 0 & 0.097 & Sí & Verdadero positivo & Sí \\
+    Afganistán & 2021 & 1 & 0.055 & No & Falso positivo & - \\
+    Santo Tomé y Príncipe & 2022 & 13 & -0.002 & Sí & Falso negativo & No \\
+    Níger & 2021 & 13 & -0.002 & Sí & Falso negativo & No \\
+    Malí & 2021 & 13 & -0.003 & Sí & Falso negativo & Sí \\
+    Guinea-Bisáu & 2022 & 13 & -0.021 & Sí & Falso negativo & No \\
+    Chad & 2021 & 10 & -0.056 & Sí & Falso negativo & No \\
+    \bottomrule
+    \end{tabular}
+\caption{Proceso más importante para terminar con un régimen (lag 1) vs valores 
+          SHAP (Random Forest) \label{tab:shap_rf_regend}}
+\end{table}
+
+En el cuadro \ref{tab:shap_rf_regend}, en cambio, parece percibirse claramente la manera en la que 
+el algoritmo separó casos positivos de negativos. Aquí, el caso discutido de Afganistán figura en la
+frontera entre los casos positivos y negativos. En cambio, todos los casos cuyo valor fue diez o más
+fueron asignados como negativos, incluso Chad en 2021 que figuraba como fuerte candidato a una 
+predicción positiva en variables anteriores. Nuevamente, todos los casos fallidos de golpes fueron
+enviados al fondo de la lista. Retomando el caso de Afganistán, resulta relevante ahondar en qué releva
+esta variable y cómo se codifican sus variables. Esta variable pregunta por el proceso más 
+importante que el experto considera que lleva al fin de un régimen\cite{CopMet24}. Las respuestas que 
+figuran en el cuadro se codifican de la siguiente manera: 0=Un golpe de estado militar, 1=Un golpe de 
+estado llevado a cabo por otros grupos diferentes a los militares, 13: El régimen aún existe. Afganistán
+figura con el valor 1, por lo que podemos inferir que los expertos de esta base de datos calificaron
+el proceso político en este país como un golpe de Estado, discrepando así con el artículo de Powell y 
+Thyne, quienes no detectan un golpe de estado ni en 2021 ni en el año anterior, el cual es evaluado
+en esta variable (puesto que es lag 1).
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrrrlll}
+    \toprule
+    país & año & v2xlg\_leginter & shap & golpe & random forest & exitoso \\
+    \midrule
+    Birmania/Myanmar & 2021 & 1 & 0.123 & Sí & Verdadero positivo & Sí \\
+    Guinea & 2021 & 1 & 0.096 & Sí & Verdadero positivo & Sí \\
+    Burkina Faso & 2022 & 1 & 0.094 & Sí & Verdadero positivo & Sí \\
+    Malí & 2020 & 1 & 0.091 & Sí & Verdadero positivo & Sí \\
+    Guinea-Bisáu & 2022 & 1 & 0.086 & Sí & Falso negativo & No \\
+    Chad & 2021 & 1 & 0.063 & Sí & Falso negativo & No \\
+    Afganistán & 2021 & 1 & 0.062 & No & Falso positivo & - \\
+    Santo Tomé y Príncipe & 2022 & 0 & -0.001 & Sí & Falso negativo & No \\
+    Níger & 2021 & 0 & -0.001 & Sí & Falso negativo & No \\
+    Malí & 2021 & 0 & -0.002 & Sí & Falso negativo & Sí \\
+    Sudán & 2021 & 0 & -0.002 & Sí & Verdadero positivo & Sí \\
+    \bottomrule
+    \end{tabular}
+\caption{¿Legislatura cerrada o abortada? vs valores SHAP (Random Forest) \label{tab:shap_rf_leginter}}
+\end{table}
+
+Por último, en el cuadro \ref{tab:shap_rf_leginter} analizamos la variable que evalúa si la legislatura 
+fue cerrada o abortada en el país. Esta variable parece no haber tenido tanto peso como las anteriores 
+para la predicción, puesto que figura el caso de Sudán 2021 que tuvo el valor Shapley más bajo de la 
+tabla pero de todas formas fue predicho correctamente como positivo. De todas formas, un valor Shapley
+mayor a 0,90 parece garantizar que el caso positivo.
 
 \begin{figure}[H]
   \centering
@@ -787,13 +920,191 @@ regional).
   \caption{Shapley values para predicción 2020-2022 (XGBoost)\label{fig:shapley_xgb}}
 \end{figure}
 
+Los valores Shapey de XGBoost (figura \ref{fig:shapley_xgb}) nos brinda nuevas perspectivas. 
+Si bien comparte algunas variables con la visualización de Random Forest, figuran muchas más
+casos con valores Shapley negativos, los cuales influyen para que el caso sea predicho como negativo. 
+Así sucede con la influencia de las FFAA sobre el Poder Ejecutivo en el lag 1 (es decir, el año 
+anterior al del registro),  el cual si tiene un valor alto influye para que sea catalogado como 
+positivo, mientras que si cuenta con valores bajos influye para lo contrario.
 
+Otros datos a destacar surgen de las variables que no figuran en Random Forest. En primer lugar,
+figuran dos variables que evalúan la declaración de un Estado de emergencia en el país: ya sea si es 
+por un conflicto armado o por otros motivos, tener un valor alto en estas variables inclina la balanza 
+hacia tener un golpe de Estado. También el hecho de haber tenido un golpe de estado en el año anterior 
+parece influir para que no suceda otro en el siguiente. Lo mismo sucede con la evidencia de compra de 
+votos en el año anterior (lag 1) y en el porcentaje de adultos con derecho a votar mayores que la edad 
+mínima. Nuevamente, observaremos los valores Shapley de las variables más relevantes de la figura
+\ref{fig:shapley_xgb} para así observar con mayor detenimiento la manera en que el algoritmo tomó
+sus decisiones.
 
-Otros temas a tratar en los resultados en la próxima entrega:
+Lo primero que se puede apreciar del cuadro \ref{tab:shap_xgb_regdur} es que asigna valores Shapley
+muy similares a los que asignó Random Forest en el cuadro \ref{tab:shap_rf_regdur}. También envía casi
+todos los golpes fallidos al fondo de la lista, fallando en su correcta predicción. Sin embargo,
+XGBoost si fue exitoso en predecir que no sucedió un golpe de Estado en Afganistán, si bien parece
+ubicarse en una posición similar al del cuadro \ref{tab:shap_rf_regdur}.
 
-- Valores Shapley en cada año individual y/o en cada país
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrrrlll}
+    \toprule
+    país & año & v2regdur & shap & golpe & xgboost & exitoso \\
+    \midrule
+    Birmania/Myanmar & 2021 & 0 & 5.927 & Sí & Verdadero positivo & Sí \\
+    Sudán & 2021 & 0 & 5.328 & Sí & Verdadero positivo & Sí \\
+    Malí & 2020 & 0 & 5.283 & Sí & Verdadero positivo & Sí \\
+    Burkina Faso & 2022 & 0 & 5.159 & Sí & Verdadero positivo & Sí \\
+    Guinea & 2021 & 0 & 5.115 & Sí & Verdadero positivo & Sí \\
+    Afganistán & 2021 & 0 & 4.333 & No & Verdadero negativo & - \\
+    Chad & 2021 & 0 & 2.747 & Sí & Falso negativo & No \\
+    Malí & 2021 & 136 & 1.034 & Sí & Falso negativo & Sí \\
+    Santo Tomé y Príncipe & 2022 & 11230 & -0.671 & Sí & Falso negativo & No \\
+    Níger & 2021 & 3556 & -0.845 & Sí & Falso negativo & No \\
+    Guinea-Bisáu & 2022 & 2749 & -0.883 & Sí & Falso negativo & No \\
+    \bottomrule
+    \end{tabular}
+    \caption{Días desde comienzo régimen vs valores SHAP (XGBoost) \label{tab:shap_xgb_regdur}}
+  \end{table}
 
-- Análisis histórico de las variables destacadas
+Como último análisis de los valores Shapley en XGBoost observaremos dos variables significativas en
+las tablas \ref{tab:shap_xgb_regopp} y \ref{tab:shap_xgb_exmil}. En estas tablas la separación entre
+casos positivos y negativos no es tan lineal como en el caso anterior, sin embargo, se puede observar
+que los valores altos de los valores Shapley en la movilización de las FFAA contra el poder ejecutivo
+influyen para que el caso sea predicho como negativo. Interesantemente, aquí Afganistán figura como 
+última en la lista, lo cual permite hipotetizar que esta variable ayuda a excluir a este país del grupo
+de positivos.
+
+  \begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrlll}
+      \toprule
+      país & año & v2regoppgroupsact\_5 & shap & golpe & xgboost & exitoso \\
+      \midrule
+      Santo Tomé y Príncipe & 2022 & 0.500 & 3.222 & Sí & Falso negativo & No \\
+      Níger & 2021 & 0.429 & 2.020 & Sí & Falso negativo & No \\
+      Malí & 2020 & 0.686 & 2.011 & Sí & Verdadero positivo & Sí \\
+      Malí & 2021 & 0.400 & 1.682 & Sí & Falso negativo & Sí \\
+      Guinea-Bisáu & 2022 & 0.250 & 1.191 & Sí & Falso negativo & No \\
+      Sudán & 2021 & 0.333 & 0.863 & Sí & Verdadero positivo & Sí \\
+      Chad & 2021 & 0.325 & 0.711 & Sí & Falso negativo & No \\
+      Birmania/Myanmar & 2021 & 0.271 & 0.494 & Sí & Verdadero positivo & Sí \\
+      Burkina Faso & 2022 & 0.250 & 0.468 & Sí & Verdadero positivo & Sí \\
+      Guinea & 2021 & 0.081 & -1.072 & Sí & Verdadero positivo & Sí \\
+      Afganistán & 2021 & 0.000 & -1.187 & No & Verdadero negativo & - \\
+      \bottomrule
+    \end{tabular}
+    \caption{¿Las FFAA se movilizan contra el régimen? vs valores SHAP (XGBoost) \label{tab:shap_xgb_regopp}}
+  \end{table}
+
+  En el caso opuesto (tabla \ref{tab:shap_xgb_exmil}), un valor alto de los valores 
+  Shapley de la influencia de las FFAA sobre el poder ejecutivo parecen influir para 
+  que el caso sea predicho como positivo.
+
+\begin{table}[H]
+    \centering
+      \begin{tabular}{lrrrlll}
+        \toprule
+        país & año & v2x\_ex\_military & shap & golpe & xgboost & exitoso \\
+        \midrule
+        Guinea & 2021 & 1.000 & 0.804 & Sí & Verdadero positivo & Sí \\
+        Burkina Faso & 2022 & 0.938 & 0.744 & Sí & Verdadero positivo & Sí \\
+        Malí & 2020 & 0.917 & 0.580 & Sí & Verdadero positivo & Sí \\
+        Malí & 2021 & 1.000 & 0.554 & Sí & Falso negativo & Sí \\
+        Birmania/Myanmar & 2021 & 0.500 & 0.538 & Sí & Verdadero positivo & Sí \\
+        Afganistán & 2021 & 0.584 & 0.524 & No & Verdadero negativo & - \\
+        Chad & 2021 & 0.875 & 0.515 & Sí & Falso negativo & No \\
+        Sudán & 2021 & 0.700 & 0.397 & Sí & Verdadero positivo & Sí \\
+        Níger & 2021 & 0.286 & -0.021 & Sí & Falso negativo & No \\
+        Guinea-Bisáu & 2022 & 0.125 & -0.466 & Sí & Falso negativo & No \\
+        Santo Tomé y Príncipe & 2022 & 0.083 & -0.525 & Sí & Falso negativo & No \\
+        \bottomrule
+      \end{tabular}
+    \caption{Influencia de las FFAA sobre el poder ejecutivo vs valores SHAP (XGBoost) \label{tab:shap_xgb_exmil}}
+  \end{table}
+
+En definitiva, si bien las dos últimas variables expuestas parecen ayudar a la decisión final, el 
+algoritmo le da más peso a los días desde el comienzo del régimen como Random Forest, si bien logra
+establecer un corte claro para excluir a Afganistán en 2021 del grupo de positivos. A continuación
+abordaremos el análisis de dos casos particulares para evaluar las dificultades que pueden haber
+tenido los modelos para predecirlos.
+
+\subsection{Análisis de casos particulares}
+
+En primer lugar, analizaremos el caso de Níger en 2021, en el cual ambos algoritmos fracasaron en 
+predecir la presencia de un golpe de Estado. Comenzaremos observando las primeras cuatro variables
+con mayores valores Shapley en la predicción de un golpe de Estado en Níger entre 2020 y 2022.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{11_shapley_values_rf_niger.png}
+  \caption{Shapley values para predicción Níger 2020-2022 (Random Forest)\label{fig:shapley_rf_niger}}
+\end{figure}
+
+Lo que se puede aprehender de la figura \ref{fig:shapley_rf_niger} es que en las cuatro variables,l
+los tres casos (Níger en 2020,2021 y 2023) tienen valores Shapley muy cercanos. Siguiendo esta lógica
+se vuelve difícil para el algoritmo predecir si un golpe de Estado sucederá o no.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{12_shapley_values_xgb_niger.png}
+  \caption{Shapley values para predicción Níger 2020-2022 (XGBoost)\label{fig:shapley_xgb_niger}}
+\end{figure}
+
+En la figura \ref{fig:shapley_xgb_niger} no parece haber diferencias significativas: en tres de las
+cuatro variables los tres casos figuran cercanos y con el mismo signo. Sí resulta interesante que el
+lag 1 de la variable objetivo (¿golpes de estado en el último año?) lógicamente separa al caso de
+Níger en 2022, pero no parece influir en el resultado final.
+
+El segundo caso que evaluaremos es el de Afganistán en 2021, el cual generó discrepancias entre los
+datos y la variable objetivo, si bien uno de los modelos logró predecirlo bien.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{13_shapley_values_rf_afganistan.png}
+  \caption{Shapley values para predicción Afganistán 2021 (Random Forest)\label{fig:shapley_rf_afganistan}}
+\end{figure}
+
+Lo que se observa con claridad en la figura \ref{fig:shapley_rf_afganistan} es que la cuatro variables
+separaron sensiblemente el caso de Afganistán en 2021 del resto de los años. Esto llevó a Random Forest
+a predecir incorrectamente esta año como uno en el que se generó un golpe según Powell y Thyne 
+\citeyear{Pow11}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{14_shapley_values_xgb_afganistan.png}
+  \caption{Shapley values para predicción Afganistán 2021 (XGBoost)\label{fig:shapley_xgb_afganistan}}
+\end{figure}
+
+El caso de la figura \ref{fig:shapley_xgb_afganistan} presenta mayores sutilezas. Si bien también
+los días desde el comienzo del régimen separa al año 2021 del resto. Las últimas dos variables 
+presentan a los tres casos mucho más cercanos. Además, la variable que evalúa si las FFAA se movilizan
+contra el régimen muestra tres valores muy parecidos (lo cual lo hace incluso imperceptible para la
+visualización).
+
+Como conclusión de esta sección, podemos aseverar que ambos algoritmos logran un piso de performance 
+apreciable para poder predecir la presencia de golpes de estado en un país y año en particular. Sin 
+embargo, XGBoost demostró una mayor capacidad para predecir casos complejos, en los que (como se 
+demostró observando la variable del cuadro \ref{tab:shap_rf_regend}) grupos de expertos parecen no 
+concordar con los que crearon la base de datos de golpes de Estado que utilizamos para construir la 
+variable objetivo. De todas formas, ambos algoritmos tienen grandes dificultades para predecir golpes 
+de estado que no fueron exitosos. Probablemente se deba a que le dan relevancia a atributos que 
+describen no sólo un golpe de estado sino que también un cambio de régimen. El atributo que más 
+sobresale es la cantidad de días desde que comenzó el régimen, el cual permite evidenciar la idea 
+anterior. Estos algoritmos también recurrieron a variables que describen la interacción entre las 
+fuerzas armadas y el poder ejecutivo, así como variables asociadas a la educación política en las 
+escuelas. 
+
+En la siguiente sección, compararemos las métricas de ambos modelos con los del artículo
+de Cebotari et al \citeyear{Ceb24} para el FMI; así como las valores Shapley de las variables 
+relevantes en ambos casos. También expondremos las limitaciones de este trabajo, tanto en los
+datos trabajados como en la metodología utilizada para replicar el trabajo del FMI. Por último,
+vincularemos las variables destacadas por los algoritmos con los enfoques expuestos en el marco
+teórico.
+
+% Otros temas a tratar en los resultados en la próxima entrega:
+
+% - Valores Shapley en cada año individual y/o en cada país
+
+% - Análisis histórico de las variables destacadas
 
 \subsection{Discusiones}
 - Vinculación de resultados con estado del arte y marco teórico
