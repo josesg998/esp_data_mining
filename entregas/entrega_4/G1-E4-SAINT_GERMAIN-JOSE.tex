@@ -13,6 +13,7 @@
 \usepackage{microtype}      % microtypography
 \usepackage{xcolor}         % colors
 \usepackage{graphicx}
+\usepackage{subcaption} % Para subfiguras
 \usepackage{float}
 \usepackage[backend=biber,sorting=ynt,style=apa]{biblatex}
 
@@ -48,16 +49,18 @@ que logre predecir la presencia de golpes de estado durante los años
 2020 a 2022 en todos los países del mundo a partir de la utilización de la base de datos 
 provista por la fundación Varieties of Democracy (V-Dem) (\cite{Cop24}). A su vez, se 
 busca comparar la performance de los algoritmos entrenados con los utilizados por el artículo
-realizado por Cebotari et al (\cite{Ceb24}), el cual utilizó una mayor variedad de fuentes. 
+realizado por Cebotari et al (\cite{Ceb24}) para el Fondo Monetario Internacional (FMI), el 
+cual utilizó una mayor variedad de fuentes. 
 Adicionalmente, este trabajo busca tener una noción acabada de las variables más importantes 
-que los algoritmos utilizan para la predicción de la variable objetivo, aprovechando que la
-base de datos cuenta mayoritariamente solo con variables ligadas a lo político-institucional.
+que los algoritmos utilizan para la predicción de la variable objetivo, de manera de tener
+una noción del poder predictivo de variables puramente políticas e institucionales para 
+la predicción de golpes de Estado.
 
 \subsection{Motivación}
 % Motivación del paper (comparar con el poder predictivo de la base del FMI)
 La motivación de este trabajo es dialogar con el artículo recientemente realizado por el 
-Fondo Monetario Internacional (FMI) \cite{Ceb24}. En el mismo se aborda el mismo objeto 
-de estudio utilizando diversas metodologías, siendo una dellas la utilización de 
+Fondo Monetario Internacional (FMI) (\cite{Ceb24}). En el mismo, se aborda el mismo objeto 
+de estudio utilizando diversas metodologías, siendo una de ellas la utilización de 
 algoritmos de aprendizaje automático. En este trabajo se replicó la metodología utilizada 
 en esa sección; comparando los mismos modelos, sus respectivos hiperparámetros y la 
 métrica a maximizar durante su entrenamiento
@@ -81,11 +84,12 @@ político-institucionales frente a un abanico más diverso de variables.
 
 \section{Marco Teórico y estado del arte}
 
-El estudio de los golpes de estado, así como los procesos de democratización han sido una 
+El estudio de los golpes de estado, enmarcado en un tópico más amplio denominado
+como los procesos de democratización ha sido una 
 preocupación central para la ciencia política moderna durante el siglo xx. Diversas teorías
 se han desarrollado de manera de aprehender los causales de la democratización
 de un país así como de su proceso inverso, ya sea una erosión democrática gradual o un
-golpe de estado autoritario; así como los elementos sociales, culturales e institucionales 
+golpe de estado abrupto; así como los elementos sociales, culturales e institucionales 
 que pueden evitar o disminuir la probabilidad de que se produzcan estos fenómenos.
 
 \subsection{La Teoría de la Modernización y sus variantes}
@@ -93,9 +97,9 @@ que pueden evitar o disminuir la probabilidad de que se produzcan estos fenómen
 Uno de los primeros marcos para comprender la inestabilidad política que llevaba a un golpe
 institucional fue la teoría de la modernización, popularizada a mediados del siglo xx. 
 Entre los exponentes de esta teoría se
-encuentra Seymour Martin Lipset quien con su artículo \textit{"Some social requisites 
+encuentra Seymour Martin Lipset, con su artículo \textit{"Some social requisites 
 of democracy: economic developmente and political legitimacy"} (\citeyear{lipset1959some}). 
-Desde un enfoque sociológico, 
+Desde un enfoque sociológico, Lipset
 argumenta que el grado de desarrollo económico de una sociedad es una condición 
 necesaria para el nacimiento y consolidación de un régimen democrático, principalmente
 porque una sociedad dividida entre una masa empobrecida y una élite rica es más
@@ -109,10 +113,10 @@ medido por el porcentaje de trabajadores hombres en la agricultura y el nivel de
 utilizado per cápita (en toneladas de carbón); el nivel de urbanización, medido en índices 
 realizados previamente; así como el nivel educativo de la población, del cual toma 
 principalmente la tasa de alfabetización. El autor subraya este último factor, exponiendo
-que si no es una condición suficiente para la democracia, es una condición necesaria.
+que si no es una condición suficiente para la democracia, es al menos una condición necesaria.
 
 A su vez, Lipset describe cambios subyacentes en los diversos estratos sociales producto
-del desarrollo económico. En primer lugar, se desarrolla una suerte "lucha de clases" por 
+del desarrollo económico. En primer lugar, se desarrolla una suerte de "lucha de clases" por 
 parte de la clase baja, ya que mayores tasas de alfabetización y bienestar económico genera 
 una visión más largoplacista y compleja de la política, desarrollando una ideología secular
 reformista y gradualista en la clase obrera. En segundo lugar, una clase media fortalecida y 
@@ -168,7 +172,7 @@ y Enzo Faletto en \textit{Dependencia y Desarrollo en América Latina}
 (\citeyear{cardoso1979dependencia}). Allí, matizan las aseveraciones de la teoría, 
 indicando que la inserción de las economías latinoamericanas en la economía internacional
 no determina su trayectoria sino que incide a través de la estructura social y económica
-asociada a un tipo de actividad de exportación (en América Latina: agrícola, ganadera y
+asociada a un tipo de actividad de exportación (en América Latina: agrícola, ganadera y/o
 minera). Esta relación de dependencia está conformada por una red de intereses y de 
 coacciones que ligan unos grupos sociales a otros. Allí, el puente de las sociedades 
 latinoamericanas con el capital extranjero es el sector exportador de materias primas. 
@@ -186,19 +190,19 @@ se opongan a los de éstos, sino que, por el contrario, pasan a ser un sector co
 de aquél. En cambio, en los países con predominio de economía de enclave, en donde los 
 sectores exportadores tuvieron primacía total sobre los sectores internos, no se generaron 
 sectores medios. Allí, la relación de subordinación política de los grupos dominantes y, a 
-partir dellos, de las empresas extranjeras se da de manera más directa sobre los obreros y 
+partir de ellos de las empresas extranjeras, se da de manera más directa sobre los obreros y 
 campesinos. En este tipo de países, se logró una preocupación sobre políticas centradas en 
-el mercado interno cuando ya existía una clase media previa a la inserción en el mercado 
-mundial (como en Chile) o cuando los sectores medios lograron insertarse de manera 
+el mercado interno solo en los países donde ya existía una clase media previa a la inserción 
+en el mercado mundial (como en Chile) o cuando los sectores medios lograron insertarse de manera 
 revolucionaria (mediante golpes de estado) dentro del aparato  del Estado y lo utilizaron 
 para crear una economía nacional (México y Venezuela).
 
 En ambas situaciones, en los momentos en que los intereses de los sectores exportadores
 fueron puestos en tela de juicio fue cuando la inestabilidad política se hizo presente, 
 derivando en algunos casos en golpes de estado por parte de las fuerzas armadas. En las
-naciones con economías de enclave sucedió, por ejemplo, con la crisis económica de 1930
-ante la falta de respuestas del modelo al aumento del desempleo y a la falta de respuestas
-por parte del Estado (como si ocurrió en con sectores internos más robustos). En cambio,
+naciones con economías de enclave sucedió, por ejemplo, con la crisis económica de 1930,
+el cual sucedió a la falta de respuestas del modelo al aumento del desempleo y a la 
+falta de respuestas por parte del Estado. En cambio,
 en los países con sectores medios más fuertes, la inestabilidad política emergió varios
 años después. Allí gobiernos de corte populista lograron utilizar el estado para fortalecer
 la industria nacional y los sectores medios, y los golpes de estado se expresaron como
@@ -211,7 +215,7 @@ América Latina; evidenciando que sus momentos de inestabilidad están fuertemen
 a los procesos previos de incorporación al mercado mundial. Una de las principales críticas
 es su excesivo foco en América Latina, puesto que hay casos de países que lograron un 
 desarrollo exitoso rompiendo el ciclo de dependencia, siendo el mayor contra ejemplo los
-llamados "tigres asiáticos".
+llamados "tigres asiáticos" (Taiwan, Singapur, Corea del Sur y Hong Kong).
 % TODO: completar o ver de sacarlo
 
 \subsection{Estado burocrático autoritario}
@@ -240,7 +244,7 @@ mediano plazo a una crisis en la balanza de pagos, una estructura productiva dis
 y altas expectativas de consumo.
 
 Este proceso llevó a la conclusión de que para poder continuar con un desarrollo 
-industrial era necesario la postergación de las demandas de participación en el consumo
+industrial era necesario postergar de las demandas de participación en el consumo
 así como en el poder político del sector popular urbano. Esta conclusión generó un péndulo
 en la configuración de las coaliciones sociales: el sector empresario industrial y los
 sectores agroexportadores se unieron para bloquear la participación de sectores populares
@@ -251,26 +255,29 @@ El trabajo de O'donnell significó un contrapunto importante a las teorías prec
 contemporáneas a su tiempo, logrando evidenciar como un acelerado proceso de modernización
 económica puede derivar a golpes de estado que generen autoritarismos; aunque, a diferencia
 de la teoría de la dependencia, no se da directamente por la influencia del mercado mundial
-en las elites sino por la búsqueda de las mismas de generar un desarrollo económico por via
+en las elites locales sino por la búsqueda de ellas mismas de generar un desarrollo económico por via
 autoritaria. A pesar de la enorme precisión para describir los procesos autoritarios de 
 Brasil y Argentina en la década de 1960, la teoría de O'donnell encontró serios problemas
-para explicar procesos de autoritarismo futuros, tanto en la misma Argentina en 1976 como
-la de Chile en 1973, en dónde la coalición y el enfoque económico de los golpes de estado
-estaban más relacionado con un enfoque neoliberal y de libre mercado más que con un 
+para explicar procesos autoritarios futuros, tanto en última dictadura en Argentina como en la de
+la de Chile desde 1973, en dónde la coalición y el enfoque económico de los golpes de estado
+estaban más relacionado con una ideología neoliberal de libre mercado más que con un 
 desarrollismo por vía autoritaria.
 
 \subsection{Enfoques empíricos}
 
-Casi medio siglo desde las primeras publicaciones de Lipset, Przeworski et al
-(\citeyear{przeworski2000democracy}) a partir de una exhaustiva recolección de datos
-sobre el devenir histórico de los distintos países entre 1950 y 1990, los autores llegan
-a una serie de conclusiones sobre la relación entre desarrollo económico y democracia. En 
+Casi medio siglo después de las primeras publicaciones de Lipset, Przeworski et al
+en su libro \textit{Democracy and Development: Political Institutions and Well-Being in 
+the World, 1950-1990} (\citeyear{przeworski2000democracy}) emprenden una exhaustiva 
+recolección de datos sobre el devenir histórico de los distintos países entre 1950 y 
+1990, con los cuales llegan a una serie de conclusiones sobre la relación entre 
+desarrollo económico y democracia. En 
 primer lugar, consideran que si bien el desarrollo económico per se no conduce a una 
 democratización, si es verdad que las democracias en países en vías de desarrollo son 
 mucho más frágiles e inestables que en los países desarrollados. En segundo lugar,
 las democracias no producen una disminución de la inversión en el país; en especial si es
 un país pobre, ya que para los autores no hay mucho que el Estado pueda hacer para modificar
-esa tendencia. Por lo tanto, no hay evidencia que indique que haya que sacrificar la 
+esa tendencia. Por lo tanto, (en contrapunto con Huntington y, en parte, con O'donnell) no hay 
+evidencia que indique que haya que sacrificar la 
 democracia para alcanzar el desarrollo: los países que lo lograron podrían
 haberlo hecho tanto en una democracia como en una dictadura.
 
@@ -286,7 +293,8 @@ conflictos bélicos.
 % leer Linz por las dudas
 A lo largo de la historia de la ciencia política del siglo xx y xxi se observa una
 preeminencia de la temática asociada a la democratización y al desarrollo. Cada autor
-desde su perspectiva teórica así como del análisis de experiencias históricas ha intentado
+desde su perspectiva teórica así como desde el análisis de experiencias históricas con las 
+que contaban en su momento ha intentado
 rescatar los factores que habilitan y fortalecen un sendero democrático, así como aquellos
 que impiden su consolidación. Haciendo un recorrido por todos los autores tratados en esta
 sección podemos rescatar que la eficiencia del Estado para resolver problemas políticos así
@@ -294,10 +302,10 @@ como su legitimidad son factores relevantes para la estabilidad de un régimen d
 Adicionalmente, comprender el contexto socioeconómico y la trayectoria histórica de un país
 se vuelve fundamental para comprender los límites que encuentran los países periféricos para
 alcanzar el desarrollo económico y político. Finalmente, los aportes de Przeworski et al
-son críticos para no dejarse llevar por asentados axiomas que determinan la postergación
-democrática en pos de un desarrollo económico rápido.
+son críticos sobre asentados axiomas que determinan la postergación democrática en pos de un 
+desarrollo económico rápido.
 
-Como cierre, es importante destacar que si bien los golpes de estado rondan permanentemente
+Es importante destacar que si bien los golpes de estado rondan permanentemente
 en el desarrollo de estas teorías, no figuran estudios relevantes que se hayan concentrado
 exclusivamente en su estudio, así como en sus motivadores. Es por eso que el artículo
 realizado por Cebotari et al (\citeyear{Ceb24}) nos ha llamado la atención, ya que es un
@@ -306,14 +314,14 @@ prudentemente separado de las teorías antes descritas; no solo para poder conce
 esfuerzos en el estudio del hecho en sí sino también para abarcar no solo los golpes de
 estado hacia regímenes democráticos, sino también hacia regímenes autoritarios en todas
 sus variantes. En la siguiente sección se desarrollará la metodología con la que se guiará
-el trabajo, utilizando en buena medida las técnicas expuestas por el artículo del Cebotari
+el trabajo, utilizando en buena medida las técnicas expuestas por el artículo de Cebotari
 et al.
 
 \section{Metodología}
 Puesto que buscamos reproducir el mismo trabajo realizado por el FMI (\cite{Ceb24}) 
-con diferentes datos, vamos a utilizar las mismas 
-técnicas de optimización de hiperparámetros, así como los mismos algoritmos
-de entrenamiento y de interpretación de resultados.
+con diferentes datos, vamos a utilizar las mismas técnicas de optimización de 
+hiperparámetros, así como los mismos algoritmos de entrenamiento y de interpretación 
+de resultados. A continuación desarrollaremos cada uno de estos puntos metodológicos.
 
 \subsection{Algoritmos de predicción}
 Los algoritmos que se utilizarán serán Random Forest (\cite{Bre01}) y XGBoost
@@ -345,7 +353,7 @@ Adicionalmente, XGBoost incluye algunas mejoras como la regularización
 y el manejo eficiente de datos faltantes. 
 
 \subsection{Métrica de evaluación}
-Adicionalmente, para la evaluación de performance se utilizará el área bajo la curva ROC 
+Para la evaluación de performance se utilizará el área bajo la curva ROC 
 (AUC). La curva ROC es construida trazando la tasa de verdaderos positivos (la 
 sensibilidad) frente a la tasa de falsos positivos (especificidad) en diferentes umbrales 
 de decisión. El área total de esta curva es la que se utilizará para evaluar la 
@@ -360,9 +368,10 @@ Con respecto al ajuste de hiperparámetros se utilizará la optimización bayesi
 algoritmo goza de varias ventajas con respecto a sus contrapartes grid search y random
 search. Mientras que estos últimos recorren los hiperparámetros
 sin prestar atención al puntaje que obtiene la métrica a optimizar, la optimización bayesiana
-sí lo hace (en este caso, el área bajo la curva ROC) e intenta mejorar ese
-puntaje en cada iteración. Asi, recorre el espacio de hiperparámetros de manera más eficiente,
-probando combinaciones de hiperparámetros que permitan minimizar o maximizar la métrica.
+sí lo hace (en este caso, el área bajo la curva ROC) e intenta mejorar ese puntaje en cada iteración. 
+Asi, recorre el espacio de hiperparámetros de manera más eficiente,
+probando combinaciones de hiperparámetros que permitan minimizar o maximizar la métrica, dependiendo
+de lo que se necesite.
 Además, por cómo está desarrollado este algoritmo, en los hiperparámetros con decimales, puede
 explorar cualquier tipo de valores entre un rango provisto por el usuario, obteniendo valores
 precisos de los hiperparámetros. Esta optimización bayesiana consistirá en 100 
@@ -381,7 +390,8 @@ Adicionalmente el parámetro que establece la cantidad de árboles creados
 
 \subsection{Block-time-series cross-validation}
 Para evitar el data leakage -es decir, incorporar en el conjunto de entrenamiento
-información que no vamos a tener en futuro- en cada iteración de la optimización bayesiana
+información que no vamos a tener en futuro, generando modelos que no generalizan bien- 
+en cada iteración de la optimización bayesiana
 se utilizará la validación cruzada. Sin embargo, como se trabajará con una base
 de datos de panel, conviene utilizar una versión adaptada: el método \textit{block-
 time-series cross-validation}, basado en \cite{Bur94} y \cite{RAc00}. El método 
@@ -395,7 +405,6 @@ hiperparámetros que lograron maximizar el AUC y se entrena el modelo con el set
 entrenamiento para intentar predecir los golpes de estado entre 2020 y 2022. 
 
 \subsection{Valores Shapley}
-% TODO incluir explicacíón de los Shapley Values
 Para interpretar las variables más importantes en la predicción de golpes de estado, se 
 utilizarán los valores Shapley (\cite{Str10}; \cite{Lun17}). Basado en la teoría de 
 juegos, los valores Shapley  consideran todas las posibles coaliciones de características 
@@ -431,7 +440,7 @@ sobre los distintos países. Inicialmente, se busca que cada país cuente con al
 cinco expertos. Actualmente, la institución cuenta con 22 expertos promedio por país
 y 7,1 expertos por combinación de variable y país. Una vez obtenida las respuestas
 de los expertos, se pasa al proceso de agregación para así conformar una base de 
-datos donde cada fila corresopnda a un país en un año específico. De esta agregación
+datos donde cada fila corresponda a un país en un año específico. De esta agregación
 obtienen diferentes versiones de la misma variable:
 
 \begin{itemize}
@@ -464,8 +473,8 @@ producido por V-Dem o no:
   \item e\_: variables no generadas por V-Dem y variables V-Dem en versión ordinal.
 \end{itemize}
 
-El nombre de la variable también permite identificar la área temática a la que 
-pertenece:
+El segundo prefijo de la variable (solo en los que pertenecen al grupo v2) permite 
+identificar la área temática a la que pertenece:
 
 \begin{itemize}
   \item ca: Espacio cívico y académico
@@ -495,12 +504,13 @@ A la base original obtenida desde la librería de V-Dem, se le realizaron los
 siguientes filtros: en primer lugar, se removieron todas las variables que
 no sean las principales, es decir, que no cuenten con sufijo. De esa manera,
 se busca reducir el tamaño de la base y así poder agregar nuevas columnas
-mediante ingeniería de atributos. En segundo lugar, se filtraron los años 
-superiores a 1950, para adecuarnos al periodo utilizado en el artículo del FMI.
-De esa manera, la base filtrada cuenta con 12208 filas y 1460 columnas. Por último,
+mediante ingeniería de atributos. En segundo lugar, se quitaron los años 
+anteriores a 1970, para adecuarnos al periodo utilizado en el artículo del FMI.
+De esa manera, la base filtrada cuenta con 9170 filas y 1460 columnas. Por último,
 se remueven todas las variables de fuentes externas (cuyo agrupador comienza con
 'e'), las variables pertenecientes a la base histórica (agrupador 'hist') y las
-de la encuesta de sistema de partidos políticos; en parte debido a que provienen
+de la encuesta de sistema de partidos políticos y de la encuesta de sociedad digital; 
+en parte debido a que provienen
 de fuentes ajenas a V-Dem que pueden comprometer la completitud futura de los datos
 y en parte porque algunas de estas variables cuentas con alta tasa de nulos.
 
@@ -525,12 +535,8 @@ información de estas variables provienen de fuentes externas no gestionadas por
 V-Dem, las cuales finalizaron su serie en un año puntual. Por último figuran los 
 grupos de variables asociados a la base de datos histórica de v-dem (las que comienzan 
 con hist), lo cual es lógico puesto que esta base busca tomar datos previos a 1900.
-
-Consecuentemente, quitaremos del grupo de variables a utilizar aquellas que sean de
-fuentes externas, ya que de esa manera podemos asegurarnos que contaremos con todas
-las variables para predecir golpes de estado en años futuros. También quitamos las
-variables provenientes de fuentes históricas y de las encuestas de sociedad digital,
-ya que no cuentan con información para toda la serie.
+Como se indicó previamente, todos estos grupos de variables serán quitados de la base
+utilizada para el entrenamiento de los algoritmos.
 
 Haciendo foco en la variable objetivo, es importante aclarar que en este trabajo no 
 estamos contando la cantidad precisa
@@ -546,7 +552,6 @@ realizada por Powell y Thyne (\citeyear{Pow11}). En el artículo que respalda es
 definen a un intento de golpe de Estado como \textit{intentos ilegales y manifiestos por parte 
 de las fuerzas armadas u de otras elites dentro del aparato estatal de derrocar al 
 gobierno en ejercicio} (\cite[p.~252]{Pow11}).
-
 
 Para realizar un paneo general de la variable objetivo, es decir, la presencia de
 golpes de estado a lo largo de los años, generamos un conteo y lo visualizamos en un 
@@ -638,8 +643,8 @@ si utilizan diferentes variables para sus predicciones.
 
 Puesto que los casos positivos son apenas diez, aprovecharemos para visualizar la performance
 de los modelos en cada uno de los casos. Adicionalmente, incorporamos el único falso positivo
-predicho por Random Forest (Afganistan en el año 2021). La lista figura en la 
-tabla (Cuadro \ref{tab:resultados}).
+predicho por Random Forest (Afganistán en el año 2021). La lista figura en el cuadro 
+(Cuadro \ref{tab:resultados}).
 
 \begin{table}[H]
   \centering
@@ -672,12 +677,12 @@ positivo predicho por Random Forest, mientras que XGBoost logró categorizarlo c
 Profundizando en el análisis de la performance, vamos a observar la probabilidad asignada
 a cada caso por el algoritmo. Mirando la probabilidad de Random Forest 
 (figura \ref{fig:prob_rf}), llama la atención como el caso de Afganistán en 2021 figura
-tan arriba en la lista, superando incluso a cuatro casos positivos ¿Por qué sucedió esto?
+en los primeros puestos de la lista, superando incluso a cuatro casos positivos ¿Por qué sucedió esto?
 Resulta útil remitirnos nuevamente a la definición de golpes de Estado de Powell y Thyne:
 \textit{intentos ilegales y manifiestos por parte de las fuerzas armadas u de otras elites dentro
 del aparato estatal de derrocar al gobierno en ejercicio} (\cite[p.~252]{Pow11}). En el caso de 
 Afganistán, la toma del poder no fue perpetrada por sectores internos del Estado afgano, sino
-por un ejército externos (en este caso, el movimiento Talibán).
+por un ejército externo (en este caso, el movimiento Talibán).
 
 \begin{figure}[H]
   \centering  
@@ -694,7 +699,7 @@ lo cual hace esperable que fallen en lograr predecir sus respectivos golpes de E
 referimos a Níger en 2021. Random Forest le asignó una probabilidad del 4,46 por ciento, 
 posicionándolo en el puesto 36. Aún más interesante, XGBoost le asignó apenas una probabilidad
 de 0,033 por ciento (puesto 44). Profundizando en este caso, descubrimos que lo que sucedió tanto en 
-Níger como en Guinea-Bisáu y en Santo Tomé y Príncipe fueron intentos fallidos de golpe de Estado.
+Níger como en Guinea-Bisáu y Santo Tomé y Príncipe fueron intentos fallidos de golpe de Estado.
 Esto nos puede dar una pista de qué tan efectivos son estos modelos para predecir golpes de Estado 
 que no llegan a concretarse.
 
@@ -789,7 +794,7 @@ saber qué valores obtuvieron en las variables más destacadas de la figura \ref
 
   \begin{tabular}{lrrrlll}
     \toprule
-    país & año & v2regdur & shap & golpe & random forest & exitoso \\
+    país & año & v2regdur & shap & golpe & Random Forest & exitoso \\
     \midrule
     Sudán & 2021 & 0 & 0.346 & Sí & Verdadero positivo & Sí \\
     Birmania/Myanmar & 2021 & 0 & 0.332 & Sí & Verdadero positivo & Sí \\
@@ -825,7 +830,7 @@ Ahora observaremos la variable que registra si el ejecutivo no es más electo:
   \centering
   \begin{tabular}{lrrrlll}
     \toprule
-    país & año & v2x\_hosinter & shap & golpe & random forest & exitoso \\
+    país & año & v2x\_hosinter & shap & golpe & Random Forest & exitoso \\
     \midrule
     Chad & 2021 & 1 & 0.321 & Sí & Falso negativo & No \\
     Guinea & 2021 & 1 & 0.279 & Sí & Verdadero positivo & Sí \\
@@ -843,7 +848,7 @@ Ahora observaremos la variable que registra si el ejecutivo no es más electo:
 \caption{¿El ejecutivo no es más electo? vs valores SHAP (Random Forest) \label{tab:shap_rf_hosinter}}
 \end{table}
 
-En este caso (tabla \ref{tab:shap_rf_hosinter}) la relación entre la predicción y el valor de la 
+En este caso (cuadro \ref{tab:shap_rf_hosinter}) la relación entre la predicción y el valor de la 
 variable y el Shapley no es tan directa, puesto que Chad en 2021 cuenta con el valor Shapley más 
 alto de la lista pero es predicho como negativo. Para el resto, se repite el patrón de predecir 
 como negativo a valores bajos del valor Shapley y como positivo a valores altos.
@@ -852,7 +857,7 @@ como negativo a valores bajos del valor Shapley y como positivo a valores altos.
   \centering
   \begin{tabular}{lrrrlll}
     \toprule
-    país & año & v2regendtype\_lag\_1 & shap & golpe & random forest & exitoso \\
+    país & año & v2regendtype\_lag\_1 & shap & golpe & Random Forest & exitoso \\
     \midrule
     Birmania/Myanmar & 2021 & 0 & 0.163 & Sí & Verdadero positivo & Sí \\
     Sudán & 2021 & 0 & 0.134 & Sí & Verdadero positivo & Sí \\
@@ -890,7 +895,7 @@ en esta variable (puesto que es lag 1).
   \centering
   \begin{tabular}{lrrrlll}
     \toprule
-    país & año & v2xlg\_leginter & shap & golpe & random forest & exitoso \\
+    país & año & v2xlg\_leginter & shap & golpe & Random Forest & exitoso \\
     \midrule
     Birmania/Myanmar & 2021 & 1 & 0.123 & Sí & Verdadero positivo & Sí \\
     Guinea & 2021 & 1 & 0.096 & Sí & Verdadero positivo & Sí \\
@@ -910,8 +915,8 @@ en esta variable (puesto que es lag 1).
 
 Por último, en el cuadro \ref{tab:shap_rf_leginter} analizamos la variable que evalúa si la legislatura 
 fue cerrada o abortada en el país. Esta variable parece no haber tenido tanto peso como las anteriores 
-para la predicción, puesto que figura el caso de Sudán 2021 que tuvo el valor Shapley más bajo de la 
-tabla pero de todas formas fue predicho correctamente como positivo. De todas formas, un valor Shapley
+para la predicción, puesto que figura el caso de Sudán 2021 que tuvo el valor Shapley más bajo del 
+cuadro pero de todas formas fue predicho correctamente como positivo. De todas formas, un valor Shapley
 mayor a 0,90 parece garantizar que el caso positivo.
 
 \begin{figure}[H]
@@ -966,7 +971,7 @@ ubicarse en una posición similar al del cuadro \ref{tab:shap_rf_regdur}.
   \end{table}
 
 Como último análisis de los valores Shapley en XGBoost observaremos dos variables significativas en
-las tablas \ref{tab:shap_xgb_regopp} y \ref{tab:shap_xgb_exmil}. En estas tablas la separación entre
+los cuadros \ref{tab:shap_xgb_regopp} y \ref{tab:shap_xgb_exmil}. En estos cuadros la separación entre
 casos positivos y negativos no es tan lineal como en el caso anterior, sin embargo, se puede observar
 que los valores altos de los valores Shapley en la movilización de las FFAA contra el poder ejecutivo
 influyen para que el caso sea predicho como negativo. Interesantemente, aquí Afganistán figura como 
@@ -995,7 +1000,7 @@ de positivos.
     \caption{¿Las FFAA se movilizan contra el régimen? vs valores SHAP (XGBoost) \label{tab:shap_xgb_regopp}}
   \end{table}
 
-  En el caso opuesto (tabla \ref{tab:shap_xgb_exmil}), un valor alto de los valores 
+  En el caso opuesto (cuadro \ref{tab:shap_xgb_exmil}), un valor alto de los valores 
   Shapley de la influencia de las FFAA sobre el poder ejecutivo parecen influir para 
   que el caso sea predicho como positivo.
 
@@ -1035,7 +1040,7 @@ con mayores valores Shapley en la predicción de un golpe de Estado en Níger en
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{11_shapley_values_rf_niger.png}
+  \includegraphics[width=.75\textwidth]{11_shapley_values_rf_niger.png}
   \caption{Shapley values para predicción Níger 2020-2022 (Random Forest)\label{fig:shapley_rf_niger}}
 \end{figure}
 
@@ -1045,7 +1050,7 @@ se vuelve difícil para el algoritmo predecir si un golpe de Estado sucederá o 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{12_shapley_values_xgb_niger.png}
+  \includegraphics[width=.75\textwidth]{12_shapley_values_xgb_niger.png}
   \caption{Shapley values para predicción Níger 2020-2022 (XGBoost)\label{fig:shapley_xgb_niger}}
 \end{figure}
 
@@ -1059,7 +1064,7 @@ datos y la variable objetivo, si bien uno de los modelos logró predecirlo bien.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{13_shapley_values_rf_afganistan.png}
+  \includegraphics[width=.75\textwidth]{13_shapley_values_rf_afganistan.png}
   \caption{Shapley values para predicción Afganistán 2021 (Random Forest)\label{fig:shapley_rf_afganistan}}
 \end{figure}
 
@@ -1070,12 +1075,12 @@ a predecir incorrectamente esta año como uno en el que se generó un golpe seg�
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{14_shapley_values_xgb_afganistan.png}
+  \includegraphics[width=.75\textwidth]{14_shapley_values_xgb_afganistan.png}
   \caption{Shapley values para predicción Afganistán 2021 (XGBoost)\label{fig:shapley_xgb_afganistan}}
 \end{figure}
 
 El caso de la figura \ref{fig:shapley_xgb_afganistan} presenta mayores sutilezas. Si bien también
-los días desde el comienzo del régimen separa al año 2021 del resto. Las últimas dos variables 
+los días desde el comienzo del régimen separa al año 2021 del resto, las últimas dos variables 
 presentan a los tres casos mucho más cercanos. Además, la variable que evalúa si las FFAA se movilizan
 contra el régimen muestra tres valores muy parecidos (lo cual lo hace incluso imperceptible para la
 visualización).
@@ -1094,7 +1099,7 @@ fuerzas armadas y el poder ejecutivo, así como variables asociadas a la educaci
 escuelas. 
 
 En la siguiente sección, compararemos las métricas de ambos modelos con los del artículo
-de Cebotari et al \citeyear{Ceb24} para el FMI; así como las valores Shapley de las variables 
+de Cebotari et al (\citeyear{Ceb24}) para el FMI; así como las valores Shapley de las variables 
 relevantes en ambos casos. También expondremos las limitaciones de este trabajo, tanto en los
 datos trabajados como en la metodología utilizada para replicar el trabajo del FMI. Por último,
 vincularemos las variables destacadas por los algoritmos con los enfoques expuestos en el marco
@@ -1102,24 +1107,211 @@ teórico.
 
 % Otros temas a tratar en los resultados en la próxima entrega:
 
-% - Valores Shapley en cada año individual y/o en cada país
-
 % - Análisis histórico de las variables destacadas
 
-\subsection{Discusiones}
-- Vinculación de resultados con estado del arte y marco teórico
+\section{Discusiones}
 
-- Comparación de performance y de variables importantes con el artículo del FMI
+En esta sección pondremos a dialogar los resultados de este trabajo de diversas maneras. En primer
+lugar, en línea con el objetivo principal del trabajo, compararemos las métricas de los modelos
+con los expuestos en el artículo del FMI por Cebotari et al (\citeyear{Ceb24}). Luego, expondremos
+las variables importantes de los algoritmos a la luz del marco teórico y el estado del arte. Finalmente,
+analizaremos las limitaciones de este trabajo y propondremos recomendaciones para futuros trabajos.
 
-- Limitaciones 
+
+\subsection{Comparación con el artículo del FMI}
+
+Como fue expuesto en las secciones anteriores, el primer objetivo de este trabajo evaluar la performance
+de los modelos entrenados con los datos de la fundación Varieties of Democracy en comparación con el modelo
+entrenado en el artículo de Cebotari et al para el FMI con alrededor de 10 fuentes de información. Si bien
+en el apartado metodológico, Cebotari et al (\citeyear{Ceb24}) describe que algoritmos utiliza, qué periodo
+de tiempo y qué hiperparámetros fueron optimizados; no muestran cuál fue el algoritmo ganador qué se utilizó
+para el análisis de resultados. A continuación, mostraremos las principales métricas de performance que
+expone el trabajo de Cebotari et al.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=1\textwidth]{15_metricas_cebotari.png}}
+  \caption{Performance del modelo FMI (\cite{Ceb24}) \label{fig:metricas_cebotari}}
+\end{figure}
+
+La figura \ref{fig:metricas_cebotari} muestra dos visualizaciones: la de la izquierda muestra el área
+bajo la curva del modelo entrenado con dos conjuntos de entrenamiento, con datos de entre 1970 a 2019
+y otro solo con datos de entre 2000 a 2010. La figura de la derecha, en cambio muestra la probabilidad
+promedio de cada país entre 2020 y 2022, marcando en rojo los países que efectivamente sufrieron un
+golpe de Estado en alguno de esos años. Con respecto a la métrica del área bajo la curva ROC (AUC), el 
+modelo de Cebotari obtuvo alrededor de 0,88 para el conjunto de entrenamiento entre 1970 y 2019. En
+% pensar hipotesis para esto
+cambio el modelo Random Forest y XGBoost obtuvieron ambos un AUC de alrededor 0,75. Para poder comparar
+la figura de la derecha replicaremos el análisis en ambos algoritmos.
+
+% show to images side by side
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{16_prob_rf_comp.png}
+    \caption{Curva ROC Random Forest \label{fig:prob_rf}}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{17_prob_xgb_comp.png}
+    \caption{Curva ROC XGBoost \label{fig:prob_xgb}}
+  \end{subfigure}
+  \caption{Curvas ROC de los modelos Random Forest y XGBoost \label{fig:roc_comp}}
+\end{figure}
+
+El modelo del FMI logra incluir en ese top 25 logra incluir a todos los Estados en donde hubo un golpe
+entre 2020 y 2023, con la sola excepción de Birmania/Myanmar. Además, la probabilidad asignada para 
+todos estos casos va disminuyendo de manera suave, a tal punto de que la posición 1 tiene una 
+probabilidad de casi 0,18 mientras que la posición 25 tiene una probabilidad de alrededor de 0,15. Con
+respecto a nuestro algoritmo Random Forest, este si logra incluir en el top 17 a todos los países que 
+sufrieron un golpe entre 2020 y 2022, si bien falla en incluir el golpe futuro de Gabón en 2023, así como
+los tres golpes de Estado fallidos de Guinea-Bisáu, Níger y Santo Tomé y Príncipe. No es 
+el caso de XGBoost, quien no solo logra incluir a Gabón sino que justo después de ese caso, la 
+probabilidad de asignar a ese país un golpes de Estado se desploma a casi cero. En definitiva, si bien 
+el artículo de Cebotari et al no explicita los verdaderos positivos y falsos positivos; podemos inferir
+que lo que genera que su algoritmo alcance valores tan altos es que logra predecir correctamente a los 
+golpes de Estado fallidos.
+
+A continuación, observaremos los valores Shapley que obtuvieron las variables más importantes en el
+modelo de Cebotari et al (\citeyear{Ceb24}) en la figura \ref{fig:shapley_cebotari} \footnote{Valores 
+cercanos al amarillo indican un bajo valor de la variable, mientras que valores cercanos al verde
+indican un valor alto.}. Como resulta lógico, en esta visualización figuran algunas variables que son 
+ajenas al ámbito político institucional, como
+la proporción de adultos mayores (\textit{Share of elder Population}), el crecimiento real del PBI
+(\textit{Real GDP growth}) o los ingresos per cápita (\textit{Income per capita}). Sin embargo, también
+figuran variables equivalentes a las que observamos en nuestros algoritmos. Por ejemplo, la variable
+Años desde el último golpe (\textit{Years since last coup}) es equivalente a la variable que mide la
+cantidad de días desde el comienzo del régimen, el cual figura entre las dos variables con valores Shapley
+más altos en la figura \ref{fig:shapley_rf} y \ref{fig:shapley_xgb}. De manera menos lineal, también podemos
+mencionar el grado de democratización (\textit{Degree of Democratization}), el gasto militar (\textit{Military
+Expenditure}) y la cantidad de golpes anteriores (\textit{Number of Coups Before}); los cuales guardan 
+similitud con variables de la base de datos V-Dem. Incluso podrían generarse estas variables en futuros 
+trabajos en la etapa de ingeniería de atributos.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=.75\textwidth]{18_shapley_values_cebotari.png}}
+  \caption{Shapley values para modelo FMI (\cite{Ceb24}) \label{fig:shapley_cebotari}}
+\end{figure}
+
+Como conclusión general de esta sección, el algoritmo generado por Cebotari et al demuestra una mayor 
+performance a la hora de predecir golpes de Estado en un año y país en particular. En especial, goza
+de mayor poder de predicción para los intentos fallidos. Se puede inferir que esta mayor capacidad
+predictiva surge del amplio abanico de atributos con los que cuenta su base de datos, que provienen de
+diversas fuentes externas y que describen fenómenos políticos, económicos, sociales y poblacionales. De
+todas formas, no es banal destacar que el hecho de que el trabajo del FMI haya incluido tantas fuentes
+externes hace más probable que existan serias difiultades para replicar el trabajo en años futuros. En 
+cambio, en nuestro trabajo nos cercioramos de excluir del entrenamiento atributos ajenos a la encuesta
+desarrollada todos los años por la fundación Varieties of Democracy. De esa manera, tenemos mayor 
+confianza de poder replicar este trabajo en el futuro en la medida de que la encuesta y la fundación 
+que la respalda continúen realizando su trabajo.
+
+\subsection{Análisis teórico de los resultados}
+
+En esta sección haremos una breve reflexión teórica sobre las variables destacadas por los tres 
+algoritmos (XGboost, Random Forest y el presentado por Cebotari et al \citeyear{Ceb24}). En primer lugar
+podemos destacar la variable que indica los días desde el comienzo del régimen, el cual figura tanto en 
+XGBoost como en Random Forest como uno de los principales atributos a considerar para sus predicciones.
+Como contraparte también figura en XGBoost y en el algoritmo del FMI la presencia de golpes en años
+anteriores. Lo que se puede rescatar de estos atributos es que una democracia que logra perdurar en el
+tiempo ininterrumpidamente se vuelve cada vez menos propensa a sufrir interrupciones institucionales en
+forma de golpe de Estado.
+
+Otro tipo de variables se relacionan de manera más obvia con la variable objetivo, como la interrupción de
+la legislatura o que el poder ejecutivo no sea más electo. De todas formas, esto le imprime un sesgo
+democrático a los algoritmos, en el sentido de estos esperan que los golpes de Estado se 
+realizen contra democracias y no contra dictaduras. De forma no tan directa, el algoritmo XGBoost nos hace
+llamar la atención sobre la declaración de un estado de emergencia, el cual augura una fuerte
+inestabilidad política en el país que es declarada.
+
+Adicionalmente, destacan las variables asociadas al poder relativo de las fuerzas armadas sobre el gobierno,
+así como por su nivel de movilización contra el gobierno. El algoritmo del FMI también agrega el porcentaje
+de personal militar por sobre la población y el gasto militar del Estado. Sin ser una novedad, esta 
+información coloca a las fuerzas armadas como actores ineludibles en cualquier interrupción del orden 
+constitucional
+
+Otro punto de interés es la presencia de variables asociadas a la educación primaria y secundaria, así como
+de la presencia de enseñanza sobre valores políticos. Este tipo de atributos respaldan los postulados de
+Lipset (\citeyear{lipset1959some}). Siguiendo su línea de pensamiento, un fortalecimiento de la enseñanza
+de valores políticos en la población asegura el fortalecimiento de la legitimidad de un régimen democrático,
+uno de los dos pilares junto con la eficacia para que una democracia se mantenga en el tiempo.
+
+Como último aporte, no quisieramos dejar de mencionar la presencia del crecimiento real del PBI en el
+algoritmo desarrollado por Cebotari et al (\citeyear{Ceb24}), fundamentalmente porque contradice las teorías
+esbozadas por Hungington (\citeyear{huntington68political}) y O'donnell (\citeyear{o1972modernizacion}) de
+que el acelerado crecimiento económico genera inestabilidad política.
+
+En síntesis, los algoritmos entrenados en este trabajo no tienden a dialogar de manera directa con los
+postulados de los autores citados en el marco teórico. Esto sucede fundamentalmente porque los datos de
+la base de datos utilizadas son inherentes al ámbito político institucional, mientras que los teóricos
+sociales buscan explicaciones más amplias y multicausales, que involucren procesos no solo políticos sino
+también económicos, sociales y culturales. 
+
+\subsection{Limitaciones}
+
+En esta sección mostraremos las limitaciones que ha encontrado este trabajo para lograr el objetivo de
+reproducir e artículo de Cebotari et al (\citeyear{Ceb24}) y lograr un algoritmo que prediga igual o mejor
+en términos del área bajo la curva ROC. En primer lugar, a la hora de optimizar hiperparámetros, el artículo
+no indica en qué rangos de hiperparámetros se manejaron; lo cual implicó que se haya tenido que trabajar
+con rangos amplios de esos hiperparámetros, volviéndolo más costoso computacionalmente. Esto generó problemas
+particularmente con Random Forest, ya que es un algoritmo que suele tardar varios minutos en entrenarse 
+dependiendo del valor de los hiperparámetros que se optimizaron en el artículo.
+
+En segundo lugar, fue recurrente la incapacidad de ambos algoritmos para predecir golpes de Estado fallidos.
+Esto parece ser indicador de que los datos de V-Dem no logran dar suficientes señales de que un golpe intentó
+perpretarse infructuosamente en un momento determinado.
+
+Después, la capacidad computacional limitada con la que se podía disponer impidió que se pudiera explorar
+la utilización de todas las variables del conjunto de datos, puesto que se quitaron algunas versiones de las 
+mismas variables para incorporar sus variantes lag (especulando con que tendrían mayor valor para los 
+algoritmos). Por último, si bien no se condice con el objetivo de reproducir el artículo del FMI, el conjunto de
+datos de V-Dem cuenta con información mucho más anterior a 1970, la cual de haberse utilizado podría haber
+generado algoritmos más performantes en su predicción.
 
 \section{Conclusiones}
 - Resumen de los hallazgos principales
 
-- Conclusiones generales y su relación con los objetivos del trabajo
 
-- Recomendaciones para futuros trabajos
+El hecho de haber realizado un trabajo acotado a la metodología utilizada por un artículo anterior nos 
+brinda de muchas posibilidades para trabajos futuros, puesto que implica modificar distintos aspectos 
+metodológicos, ya sea para mejorar la performance predictiva de los modelos como para ganar capacidad
+explicativa. 
 
+En primer lugar, se pueden incorporar otro tipo de algoritmos. Un ejemplo es LightGBM, un algoritmo de boosting
+que es el principal competidor a XGBoost para ganar poder predictivo. También es posible buscar buenas
+predicciones con algoritmos menos complejos, como la regresión logística, que además permite explicar de
+manera mucho más precisa las variables que influyen en la predicción con la sola utilización de sus parámetros.
+
+Adicionalmente, se puede ampliar la optimización de hiperparámetros. En este trabajo solo se optimizaron
+un par en cada algoritmo, cuando se podría intentar optimizar todos. XGBoost en particular cuenta con alrededor
+de 20 hiperparámetros que se podrían utilizar. Además, al utilizar una optimización bayesiana con una cantidad
+de iteraciones fija, la cantidad de tiempo invertido no crecería tanto puesto que el algoritmo se encargaría
+de maximizar el área bajo la curva lo antes posible de esa cantidad de iteraciones.
+
+Otra línea de investigación implica mejorar la cantidad y calidad de datos. El conjunto de datos de V-Dem
+cuenta con información de calidad sobre todo el siglo xx hasta la actualidad, incluyendo incluso variables
+histórica hasta 1789. Eso, sumado a la incorporación de otras versiones de las variables (promedios,
+desvíos estándar, entre otros) darían más poder de predicción a los algoritmos. Alternativamente, se podría
+diseñar un problema de clasificación múltiple, que sortee el problema que encontraron los algoritmos para 
+predecir golpes fallidos. De esa manera se podría codificar como 0 si no sucedió un golpes, como 1 si fue un
+golpe fallido y como 2 si fue un golpe exitoso.
+
+Por último, si bien intentamos predecir golpes de Estado, el enfoque del trabajo impide generar
+predicciones para el futuro; por lo que nos focalizamos en generar explicaciones sobre golpes en el
+pasado reciente. Si quisieramos predecir golpes para el año actual, deberíamos contar con 
+una enorme cantidad de variables que toman tiempo en codificarse y que se suelen publicar hacia el final del
+año. Por ese motivo, se podría rediseñar la variable objetivo, adelantando una n cantidad de años la columna
+objetivo, para que cuando se evalúa el modelo en el conjunto de testeo, en realidad se esté prediciendo
+si sucederá un golpe en cierta cantidad de años. De esa manera se le podría dar un uso práctico a los
+algoritmos además de uno meramente académico.
+
+En definitiva, y más allá de las limitaciones encontradas, podemos considerar que el trabajo tuvo un resultado
+satisfactorio. Si bien, no alcanzó el nivel predictivo del artículo de Cebotari et al, si tuvo una performance
+muy buena para predecir golpes de Estado exitosos. Además, gracias a los valores Shapley pudimos detectar
+rapidamente qué valores intervinieron con mayor o menor relevancia para generar las predicciones, lo cual
+gana especial relevancia dado que trabajamos con un conjunto de datos de miles de atributos, los cuales pueden
+ser difíciles de destacar para evaluar el nivel democrático o la estabilidad institucional con un análisis
+simplemente descriptivo.
 
 \section{Anexo}
 \subsection{Código}
@@ -1132,7 +1324,7 @@ exploratorio de datos y el análisis de resultados de los algoritmos.
 \subsection{Golpes}
 - Breve descripción de los 10 golpes que se buscaron predecir. Su contexto histórico, político y 
 social.
-\subsection{Gráficos y tablas adicionales}
+\subsection{Gráficos y cuadros adicionales}
 \begin{figure}[H]
   \centering  
   \includegraphics[width=1\textwidth]{4_golpes_anios.png}
@@ -1142,35 +1334,36 @@ social.
 \begin{table}[H]
   \begin{tabular}{ll}
     \toprule
-    Variable                  & Descripción \\
+    Variable & Descripción \\
     \midrule
-    v2regdur                   & Días desde comienzo del régimen \\
-    v2regendtypems\_0\_lag\_1  & ¿El régimen terminó por un golpe de estado? (lag 1)* \\
-    v2x\_hosinter              & ¿El ejecutivo no es más electo? \\
-    v2xlg\_leginter            & ¿Legislatura cerrada o abortada? \\
-    v2regendtype\_lag\_1       & Proceso más importante para terminar con un régimen (lag 1) \\
-    v2x\_ex\_military          & Influencia de las FFAA sobre el Poder Ejecutivo \\
-    v2regoppgroupsact\_5       & FFA se movilizan contra el régimen? \\
-    coup\_lag\_1               & ¿golpes de estado en el último año? \\
-    v2x\_ex\_military\_lag\_1  & Influencia de las FFAA sobre el Poder Ejecutivo (lag 1) \\
-    v2expathhs                 & ¿Cómo llega el jefe de estado al gob? \\
-    v2regendtype\_lag\_5       & ¿Qué proceso fue el más importante en el fin del régimen? (lag 5)* \\
-    v2clpolcl\_lag\_1          & Libertad para todos los grupos sociales \\
-    v2csanmvch\_2\_lag\_10     & Grupos antisistema que mezclan métodos legales e ilegales (lag 10) \\
-    v2juhcind                  & Decisiones importantes de la Corte Suprema alineadas con el gobierno \\
-    v2exfxtmhs\_lag\_1         & Duración máxima del mandato del jefe de Estado (lag 1) \\
-    v2edpoledprim\_lag\_5      & ¿Se enseña en la primaria contenidos con valores políticos? (lag 5) \\
-    v2elpeace                  & Violencia durante período electoral \\
-    v2pesecsch                 & Porcentaje de población en escuela secundaria \\
-    v2lgqugent                 & Cuota femenina en la cámara baja (o cámara única) \\
-    v2ellostlg                 & Bancas obtenidas por el partido ás grande en la última elección \\
-    v2casoe\_1                 & Emergencia nacional: no declarada pero medidas preparatorias tomadas \\
-    v2casoe\_4                 & Declaración de estado de emergencia nacional por conflicto armado \\
-    v2casoe\_6                 & Declaración de estado de emergencia nacional por otros motivos \\
-    v2exagehos\_lag\_5         & Año de nacimiento del jefe de estado (lag 5) \\
-    v2elvotbuy\_lag\_1         & ¿Hubo evidencia de compra de votos en la última elección? (lag 1) \\
-    v2asuffrage                & Porcentaje de adultos con derecho a votar mayores que la edad mínima \\
-    \bottomrule 
+    v2regdur & Días desde comienzo del régimen \\
+    v2regendtypems\_0\_lag\_1 & ¿El régimen terminó por un golpe de estado? (lag 1)* \\
+    v2x\_hosinter & ¿El ejecutivo no es más electo? \\
+    v2xlg\_leginter & ¿Legislatura cerrada o abortada? \\
+    v2regendtype\_lag\_1 & Proceso más importante para terminar con un régimen (lag 1) \\
+    v2x\_ex\_military & Influencia de las FFAA sobre el Poder Ejecutivo \\
+    v2regoppgroupsact\_5 & ¿FFA se movilizan contra el régimen? \\
+    coup\_lag\_1 & ¿golpes de estado en el último año? \\
+    v2x\_ex\_military\_lag\_1 & Influencia de las FFAA sobre el Poder Ejecutivo (lag 1) \\
+    v2expathhs & ¿Cómo llega el jefe de estado al gob? \\
+    v2regendtype\_lag\_5 & ¿Qué proceso fue el más importante en el fin del régimen? (lag 5)* \\
+    v2clpolcl\_lag\_1 & Libertad para todos los grupos políticos \\
+    v2csanmvch\_2\_lag\_10 & Grupos antisistema que mezclan métodos legales e ilegales (lag 10) \\
+    v2juhcind & Decisiones importantes de la Corte Suprema alineadas con el gobierno \\
+    v2exfxtmhs\_lag\_1 & Duración máxima del mandato del jefe de Estado (lag 1) \\
+    v2edpoledprim\_lag\_5 & ¿Se enseña en la primaria contenidos con valores políticos? (lag 5) \\
+    v2elpeace & Violencia durante período electoral \\
+    v2pesecsch & Porcentaje de población en escuela secundaria \\
+    v2lgqugent & Cuota femenina en la cámara baja (o cámara única) \\
+    v2ellostlg & Bancas obtenidas por el partido más grande en la última elección \\
+    v2casoe\_1 & Emergencia nacional: no declarada pero medidas preparatorias tomadas \\
+    v2casoe\_4 & Declaración de estado de emergencia nacional por conflicto armado \\
+    v2casoe\_6 & Declaración de estado de emergencia nacional por otros motivos \\
+    v2exagehos\_lag\_5 & Año de nacimiento del jefe de estado (lag 5) \\
+    v2elvotbuy\_lag\_1 & ¿Hubo evidencia de compra de votos en la última elección? (lag 1) \\
+    v2asuffrage & Porcentaje de adultos con derecho a votar mayores que la edad mínima \\
+    v2mecenefi\_lag\_1 & ¿Busca el gobierno censurar la información en internet? (lag 1) \\
+    \bottomrule
     \end{tabular}
   \caption{Nombre original de variables y su descripción \label{tab:vars}}
 \end{table}
