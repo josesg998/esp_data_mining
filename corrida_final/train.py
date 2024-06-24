@@ -30,18 +30,13 @@ df = df[df.columns[~df.columns.str.startswith('e_')]]
 X = df.drop('coup', axis=1)
 y = df.set_index('year')['coup']
 
-for year in range(2020,end+1):
-    clf            = config_ML['modelo']
-    print("Entrenando para el año "+str(year))
-    if not os.path.exists('modelos/'+str(year)):
-        os.mkdir('modelos/'+str(year))
+clf            = config_ML['modelo']
 
-    X_train = X[X['year']<year]
-    y_train = y[y.index<year]
+X_train = X[X['year']<2020]
+y_train = y[y.index  <2020]
 
-    # %%
-    clf.fit(X_train, y_train)
-    with open('modelos/'+str(year)+'/'+output, 'wb') as f:
-        pickle.dump(clf, f)
-    print('Entrenamiento finalizado para el año '+str(year))
-print("Todos los entrenamientos finalizados")
+# %%
+clf.fit(X_train, y_train)
+with open('modelos/'+output, 'wb') as f:
+    pickle.dump(clf, f)
+print("Entrenamiento finalizado")
