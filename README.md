@@ -26,10 +26,13 @@ se utilizó la versión 3.12 de Python, con los módulos y librerías que se det
 data.table (para importar los datos y procesarlos), devtools y vdemdata (para obtener los datos de V-Dem
 desde su librería de R).
 
-2. La optimización bayesiana se realiza con el archivo `optimizacion_bayesiana/OB.py`, el cual es configurado
+2. Una vez importado los datos, el script `feature_engineering.R` se encarga de realizar la ingeniería de
+atributos necesaria para entrenar los algoritmos.
+
+3. La optimización bayesiana se realiza con el archivo `optimizacion_bayesiana/OB.py`, el cual es configurado
 con el archivo `optimizacion_bayesiana/config.py`.
 
-3. Una vez obtenidos los hiperparámetros óptimos, cargarlos en `entrenamiento_final/config.py` y correr el script
+4. Una vez obtenidos los hiperparámetros óptimos, cargarlos en `entrenamiento_final/config.py` y correr el script
 `entrenamiento_final/train.py`, lo cual devolverá los modelos finales entrenados en formato pkl.
 
 Adicionalmente, están los scripts `EDA.R` y `entrenamiento_final/analisis_final.ipynb` que realizan un análisis exploratorio
