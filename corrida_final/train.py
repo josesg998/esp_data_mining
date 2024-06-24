@@ -36,8 +36,8 @@ X_train = X[X['year']<2020]
 y_train = y[y.index  <2020]
 
 # si la carpeta modelos no existe, se crea
-if not os.path.exists('modelos'):
-    os.makedirs('modelos')
+if not os.path.exists('entrenamiento_final/modelos'):
+    os.makedirs('entrenamiento_final/modelos')
 
 # %%
 clf.fit(X_train, y_train)

@@ -7,8 +7,6 @@ import numpy as np
 import os
 import pickle
 
-os.chdir('buckets/b1')
-
 def OB():
     # create folder logs and trials if they don't exist
     if not os.path.exists('logs'):
