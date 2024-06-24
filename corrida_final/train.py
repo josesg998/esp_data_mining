@@ -30,10 +30,14 @@ df = df[df.columns[~df.columns.str.startswith('e_')]]
 X = df.drop('coup', axis=1)
 y = df.set_index('year')['coup']
 
-clf            = config_ML['modelo']
+clf = config_ML['modelo']
 
 X_train = X[X['year']<2020]
 y_train = y[y.index  <2020]
+
+# si la carpeta modelos no existe, se crea
+if not os.path.exists('modelos'):
+    os.makedirs('modelos')
 
 # %%
 clf.fit(X_train, y_train)
