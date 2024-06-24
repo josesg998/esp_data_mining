@@ -1,5 +1,6 @@
-# ignore data folder
-/data/
+*.csv
+*.pkl
+*.xlsx
 # ignore fuentes folder
 /bib/
 # ignore pycache
