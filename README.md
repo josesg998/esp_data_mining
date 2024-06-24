@@ -8,7 +8,7 @@ se entrenaron algoritmos de aprendizaje automático para predecir la presencia d
 de estado en los años 2020 a 2022 en todos los países del mundo. Este trabajo busca
 reproducir la metodología utilizada pero utilizando un conjunto de datos distinto para su
 entrenamiento, específicamente la base de datos de Varieties of Democracy (V-Dem) 
-(\cite{Cop24}). Una vez realizado el entrenamiento, se 
+(Cebtari et al. 2024). Una vez realizado el entrenamiento, se 
 busca comparar la performance de los algoritmos entrenados con los utilizados por el artículo
 de Cebotari et al (2024), evaluando si se logró alcanzar el mismo nivel de predicción. 
 Adicionalmente, este trabajo busca tener una noción acabada de las variables más importantes 
