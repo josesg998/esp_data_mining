@@ -27,9 +27,9 @@
   {\bfseries\LARGE Universidad de Buenos Aires \par}
   \vspace{1cm}
   {\scshape\Large Facultad de Ciencias Exactas y Naturales \par}
-  \vspace{3cm}
+  \vspace{2cm}
   {\scshape\Huge Predicción de golpes de estado en el siglo xxi \par}
-  \vspace{3cm}
+  \vspace{2cm}
   {\itshape\Large Especializaci\'on en Exploraci\'on de Datos y Descubrimiento del conocimiento \par}
   \vfill
   {\Large José Saint Germain \par}
@@ -38,11 +38,31 @@
 
   \begin{figure}[H]
     \centering 
-    \includegraphics[width=.5\textwidth]{0_portada.jpg}
+    \includegraphics[width=.4\textwidth]{0_portada.jpg}
    \end{figure}
+
+   \renewcommand{\abstractname}{Resumen}
+   \begin{abstract}
+    \noindent
+    Este trabajo se enfoca en replicar el trabajo de Cebotari et al (\citeyear{Ceb24}) 
+    y del Fondo Monetario Internacional (FMI) con el objetivo de desarrollar modelos
+    de aprendizaje automático predictores de golpes de estado en el siglo xxi,
+    utilizando la base de datos construida por la fundación Varieties of Democracy 
+    (\citeyear{Cop24}). Adicionalmente, indaga en el análisis de las predicciones con
+    valores Shapley. Los dos modelos entrenados demostraron un alto nivel de predicción,
+    si bien fallaron en predecir golpes de estado fallidos y no lograron superar la performance
+    del artículo del FMI. Los valores Shapley destacaron
+    la importancia de las fuerzas armadas como factor desestabilizador de gobiernos y del
+    nivel educativo como disuasivo.
+    
+  \end{abstract}
 \end{titlepage}
 
-
+% TODO
+% * Armar abstract antes del índice
+% ** Usar el resumen armado en las conclusiones
+% * Mover Comparación de resultados de Cebotari en la parte de resultados
+% * Fusionar resultados y discusión
 
 % add TOC
 \pagebreak
@@ -93,7 +113,7 @@ et al para reproducir el experimento. También se realiza una descripción del c
 de Varieties of Democracy y la ingeniería de atributos que se le realiza a la misma. Subsecuentemente, 
 se presentan los resultados obtenidos, haciendo foco en los casos positivos y en las variables que los
 algoritmos consideran relevantes para su predicción, utilizando tanto la importancia de atributos como
-los valores Shapley. En la "discusiones" se comparan los resultados con los del artículo del FMI,
+los valores Shapley. Además, se comparan los resultados con los del artículo del FMI,
 analizando las variables más importantes para la predicción de golpes de estado, así como también se 
 vinculan los resultados de los algoritmos entrenados con postulados del marco teórico. En la misma
 sección, se exponen las limitaciones del trabajo, tanto por parte de los datos entrenados como
@@ -731,11 +751,30 @@ que no llegan a concretarse.
  \caption{Predicción probabilística años 2020-2022 (XGBoost) \label{fig:prob_xgb}}
 \end{figure}
 
-Con el objetivo de profundizar los motivos para predecir correcta o incorrectamente los casos
-expuestos, así como para enriquecer el análisis sobre los factores explicativos del fenómeno 
-estudiado, realizaremos un análisis de las variables más relevantes para la predicción de golpes
-de acuerdo a los dos algoritmos. Utilizaremos la importancia de las variables, incluido dentro
-de los modelos entrenados, así como enfoques externos con los valores Shapley.
+Una vez analizada la performance de los modelos de manera inherente, pasaremos a analizar
+las variables con mayor peso en las predicciones, para eso utilizaremos la importancia de
+atributos con la que cuentan ambos algoritmos, así como la utilización de variables Shapley.
+
+% Con el objetivo de profundizar los motivos para predecir correcta o incorrectamente los casos
+% expuestos, así como para enriquecer el análisis sobre los factores explicativos del fenómeno 
+% estudiado, realizaremos un análisis de las variables más relevantes para la predicción de golpes
+% de acuerdo a los dos algoritmos. Utilizaremos la importancia de las variables, incluido dentro
+% de los modelos entrenados, así como enfoques externos con los valores Shapley.
+
+% En la siguiente sección, compararemos las métricas de ambos modelos con los del artículo
+% de Cebotari et al (\citeyear{Ceb24}) para el FMI; así como las valores Shapley de las variables 
+% relevantes en ambos casos. También expondremos las limitaciones de este trabajo, tanto en los
+% datos trabajados como en la metodología utilizada para replicar el trabajo del FMI. Por último,
+% vincularemos las variables destacadas por los algoritmos con los enfoques expuestos en el marco
+% teórico.
+
+% \section{Discusio´n}
+
+% En esta sección pondremos a dialogar los resultados de este trabajo de diversas maneras. En primer
+% lugar, en línea con el objetivo principal del trabajo, compararemos las métricas de los modelos
+% con los expuestos en el artículo del FMI por Cebotari et al (\citeyear{Ceb24}). Luego, expondremos
+% las variables importantes de los algoritmos a la luz del marco teórico y el estado del arte. Finalmente,
+% analizaremos las limitaciones de este trabajo y propondremos recomendaciones para futuros trabajos.
 
 \subsection{Análisis de variables}
 A continuación, pasaremos a evaluar la relevancia de las distintas variables del dataset
@@ -1114,22 +1153,6 @@ anterior. Estos algoritmos también recurrieron a variables que describen la int
 fuerzas armadas y el poder ejecutivo, así como variables asociadas a la educación política en las 
 escuelas.
 
-En la siguiente sección, compararemos las métricas de ambos modelos con los del artículo
-de Cebotari et al (\citeyear{Ceb24}) para el FMI; así como las valores Shapley de las variables 
-relevantes en ambos casos. También expondremos las limitaciones de este trabajo, tanto en los
-datos trabajados como en la metodología utilizada para replicar el trabajo del FMI. Por último,
-vincularemos las variables destacadas por los algoritmos con los enfoques expuestos en el marco
-teórico.
-
-\section{Discusiones}
-
-En esta sección pondremos a dialogar los resultados de este trabajo de diversas maneras. En primer
-lugar, en línea con el objetivo principal del trabajo, compararemos las métricas de los modelos
-con los expuestos en el artículo del FMI por Cebotari et al (\citeyear{Ceb24}). Luego, expondremos
-las variables importantes de los algoritmos a la luz del marco teórico y el estado del arte. Finalmente,
-analizaremos las limitaciones de este trabajo y propondremos recomendaciones para futuros trabajos.
-
-
 \subsection{Comparación con el artículo del FMI}
 
 Como fue expuesto en las secciones anteriores, el primer objetivo de este trabajo evaluar la performance
@@ -1210,7 +1233,7 @@ de mayor poder de predicción para los intentos fallidos. Se puede inferir que e
 predictiva surge del amplio abanico de atributos con los que cuenta su base de datos, que provienen de
 diversas fuentes externas y que describen fenómenos políticos, económicos, sociales y poblacionales. De
 todas formas, no es banal destacar que el hecho de que el trabajo del FMI haya incluido tantas fuentes
-externas hace más probable que existan serias difiultades para replicar el trabajo en años futuros. En 
+externas hace más probable que existan serias dificultades para replicar el trabajo en años futuros. En 
 cambio, en nuestro trabajo nos cercioramos de excluir del entrenamiento atributos ajenos a la encuesta
 desarrollada todos los años por la fundación Varieties of Democracy. De esa manera, tenemos mayor 
 confianza de poder replicar este trabajo en el futuro en la medida de que la encuesta y la fundación 
@@ -1330,6 +1353,7 @@ la demografía o el capital humano. De todas formas, se encontraron vasos comuni
 importantes de Random Forest asociadas a la eduación (figuras \ref{fig:feat_imp_rf} y \ref{fig:shapley_rf})
 con la teoría de la modernización expuesta con Lipset (\citeyear{lipset1959some}).
 
+\section{Perspectivas futuras}
 El hecho de haber realizado un trabajo acotado a la metodología utilizada por un artículo anterior
 nos limitó en lo que respecta al entrenamiento de los algoritmos y la optimización
 de hiperparámetros, así como es probable que haya restringido la capacidad de predicción, puesto que el 
